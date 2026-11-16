@@ -1578,3 +1578,18 @@ form input {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+.resumo-combo-info {
+    text-align: left;
+}
+
+.resumo-combo-info span {
+    color: var(--texto-secundario);
+    font-size: 14px;
+}
+
+.resumo-combo-info strong {
+    display: block;
+    color: var(--preto);
+    font-family: var(--font-corpo);
+    font-size: 15px;
+}
