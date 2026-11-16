@@ -1593,3 +1593,316 @@ form input {
     font-family: var(--font-corpo);
     font-size: 15px;
 }
+/* ========================================
+   16. CLUBE MÉQUI (VITRINE, LOGIN E CADASTRO)
+======================================== */
+
+.pagina-clube {
+    width: 100%;
+    max-width: 1140px;
+    margin: 40px auto;
+    padding: 24px;
+}
+
+.selo-membro {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 5px 12px;
+    background-color: var(--amarelo);
+    color: var(--preto);
+    border-radius: 4px;
+    font-family: var(--font-titulo);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+/* Painel do Cliente Logado */
+.cartao-clube-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 44px;
+    padding: 32px 36px;
+    background: linear-gradient(135deg, var(--vermelho) 0%, var(--vermelho-escuro) 100%);
+    color: var(--branco);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--sombra-card);
+}
+
+.cartao-clube-topo h2 {
+    margin: 0 0 8px;
+    color: var(--branco);
+    font-size: 30px;
+}
+
+.cartao-clube-topo p {
+    max-width: 540px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 15px;
+}
+
+.caixa-pontos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 200px;
+    padding: 20px 28px;
+    background-color: var(--branco);
+    color: var(--preto);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    text-align: center;
+}
+
+.caixa-pontos span {
+    color: var(--texto-secundario);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.caixa-pontos strong {
+    margin: 4px 0 10px;
+    color: var(--preto);
+    font-family: var(--font-titulo);
+    font-size: 32px;
+    line-height: 1.1;
+}
+
+.link-sair-clube {
+    color: var(--texto-secundario);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: underline;
+    transition: color var(--transicao);
+}
+
+.link-sair-clube:hover {
+    color: var(--vermelho);
+}
+
+/* Vitrine de Recompensas */
+.vitrine-recompensas h3 {
+    margin: 0 0 6px;
+    color: var(--preto);
+    font-size: 26px;
+}
+
+.vitrine-recompensas > p {
+    margin: 0 0 28px;
+    color: var(--texto-secundario);
+    font-size: 15px;
+}
+
+.descricao .pontos-recompensa {
+    margin-bottom: 6px;
+    color: var(--preto);
+    font-size: 18px;
+}
+
+.descricao .descricao-recompensa {
+    margin-bottom: 16px;
+    color: var(--texto-secundario);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.botao-adicionar:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Tela de Login e Cadastro do Clube */
+.clube-auth-container {
+    max-width: 920px;
+    margin: 0 auto;
+}
+
+.clube-auth-header {
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.clube-auth-header h2 {
+    margin: 0 0 8px;
+    color: var(--preto);
+    font-size: 32px;
+}
+
+.clube-auth-header p {
+    max-width: 560px;
+    margin: 0 auto;
+    color: var(--texto-secundario);
+    font-size: 16px;
+}
+
+.clube-forms-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+}
+
+.clube-box {
+    padding: 30px;
+    background-color: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--sombra-card);
+}
+
+.clube-box.destaque-cadastro {
+    border: 2px solid var(--amarelo);
+    background-color: var(--amarelo-suave);
+}
+
+.clube-box h3 {
+    margin: 0 0 20px;
+    color: var(--preto);
+    font-size: 22px;
+}
+
+.clube-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.clube-box input {
+    width: 100%;
+    margin-bottom: 6px;
+}
+
+.clube-box input:focus {
+    outline: 2px solid var(--amarelo);
+}
+
+.clube-box button {
+    width: 100%;
+    margin-top: 8px;
+    padding: 13px 20px;
+}
+
+
+/* ========================================
+   17. COMPLEMENTOS DO MODAL, PAINEL E TOAST
+======================================== */
+
+.resumo-combo-info {
+    text-align: left;
+}
+
+.resumo-combo-info span {
+    color: var(--texto-secundario);
+    font-size: 14px;
+}
+
+.resumo-combo-info strong {
+    display: block;
+    color: var(--preto);
+    font-family: var(--font-corpo);
+    font-size: 15px;
+}
+
+/* Painel dos Funcionários (Excluir e Vazio) */
+.form-excluir-pedido {
+    margin-top: 10px;
+}
+
+.botao-excluir-pedido {
+    width: 100%;
+    background-color: transparent;
+    color: var(--texto-secundario);
+    border: 1px solid var(--borda);
+}
+
+.botao-excluir-pedido:hover {
+    background-color: #FEE2E2;
+    color: var(--vermelho);
+    border-color: var(--vermelho);
+}
+
+.nenhum-filtro,
+.sem-pedidos {
+    padding: 40px 20px;
+    color: var(--texto-secundario);
+    text-align: center;
+}
+
+/* Toast de Notificação do Carrinho */
+.toast-carrinho {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background-color: var(--preto);
+    color: var(--branco);
+    border-radius: var(--radius-md);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transform: translateY(16px);
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast-carrinho.visivel {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-icone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background-color: var(--amarelo);
+    color: var(--preto);
+    border-radius: 50%;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.toast-texto strong {
+    display: block;
+    font-family: var(--font-titulo);
+    font-size: 14px;
+}
+
+.toast-texto span {
+    color: #D4D4D4;
+    font-size: 13px;
+}
+
+.animar-pulo {
+    animation: pulo-carrinho 0.35s ease;
+}
+
+@keyframes pulo-carrinho {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+}
+
+/* Responsividade do Clube Méqui */
+@media (max-width: 768px) {
+    .cartao-clube-topo {
+        flex-direction: column;
+        padding: 24px;
+        text-align: center;
+    }
+
+    .caixa-pontos {
+        width: 100%;
+    }
+
+    .clube-forms-grid {
+        grid-template-columns: 1fr;
+    }
+}
