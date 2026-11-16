@@ -1,23 +1,54 @@
 /* ========================================
-   1. DESIGN SYSTEM OFICIAL MÉQUI
+   1. DESIGN SYSTEM & VARIÁVEIS (MÉQUI)
 ======================================== */
 
 :root {
+    /* Cores da Marca */
     --vermelho: #DB0007;
     --vermelho-escuro: #B80006;
     --amarelo: #FFBC0D;
     --amarelo-hover: #F2B000;
     --amarelo-suave: #FFF8E6;
+
+    /* Neutros e Superfícies */
     --preto: #292929;
     --texto-secundario: #6F6F6F;
     --superficie: #F9F9F9;
     --branco: #FFFFFF;
     --borda: #E6E6E6;
+
+    /* Cores de Status (Painel) */
+    --status-pendente-texto: #8A5B00;
+    --status-preparo-bg: #EBF3FF;
+    --status-preparo-texto: #15569B;
+    --status-preparo-borda: #2878D0;
+    --status-concluido-bg: #E7F7EC;
+    --status-concluido-texto: #176B34;
+    --status-concluido-borda: #299B50;
+
+    /* Tipografia */
+    --font-titulo: "Fredoka", sans-serif;
+    --font-corpo: "Nunito", -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* Bordas, Sombras e Transições */
+    --radius-sm: 5px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 14px;
     --sombra-card: 0 4px 18px rgba(0, 0, 0, 0.07);
     --sombra-card-hover: 0 10px 28px rgba(0, 0, 0, 0.12);
+    --transicao: 0.2s ease;
+    --transicao-card: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-* {
+
+/* ========================================
+   2. RESET E BASE GLOBAL
+======================================== */
+
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -32,11 +63,11 @@ body {
 }
 
 body {
-    font-family: "Nunito", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-corpo);
     font-weight: 600;
+    line-height: 1.5;
     background-color: var(--branco);
     color: var(--preto);
-    line-height: 1.5;
 }
 
 h1, h2, h3, h4,
@@ -48,7 +79,7 @@ h1, h2, h3, h4,
 .botao-adicionar,
 .total-pedido,
 #carrinho-total {
-    font-family: "Fredoka", sans-serif;
+    font-family: var(--font-titulo);
     letter-spacing: -0.01em;
 }
 
@@ -70,7 +101,99 @@ label:focus-visible {
 
 
 /* ========================================
-   2. CABEÇALHO OFICIAL (BRANCO CLEAN)
+   3. COMPONENTES REUTILIZÁVEIS (BOTÕES & CARDS)
+======================================== */
+
+/* Botão Principal Amarelo */
+button,
+.botao-carrinho,
+.botao-adicionar,
+.botao-confirmar-combo,
+.botao-voltar-cardapio,
+.promocao-item a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 22px;
+    background-color: var(--amarelo);
+    color: var(--preto);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-titulo);
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color var(--transicao), transform 0.15s ease;
+}
+
+button:hover,
+.botao-carrinho:hover,
+.botao-adicionar:hover,
+.botao-confirmar-combo:hover,
+.botao-voltar-cardapio:hover,
+.promocao-item a:hover {
+    background-color: var(--amarelo-hover);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Superfície Padrão de Card */
+.promocao-item,
+.cardapio-item,
+.diferencial-item,
+.item-carrinho,
+.pedido-funcionario {
+    background-color: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--sombra-card);
+}
+
+/* Elevação ao passar o mouse */
+.promocao-item,
+.cardapio-item,
+.diferencial-item {
+    transition: var(--transicao-card);
+}
+
+.promocao-item:hover,
+.cardapio-item:hover,
+.diferencial-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sombra-card-hover);
+}
+
+/* Títulos e Subtítulos de Seção */
+.promocoes h2,
+#cardapio h2,
+.sobre h2,
+.titulo-pagina h2,
+.pagina-carrinho h2 {
+    margin: 0 0 6px;
+    color: var(--preto);
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.promocoes > p,
+#cardapio > p,
+.sobre > p,
+.titulo-pagina p,
+.pagina-carrinho > p {
+    margin: 0;
+    color: var(--texto-secundario);
+    font-size: 16px;
+}
+
+
+/* ========================================
+   4. CABEÇALHO OFICIAL
 ======================================== */
 
 .cabecalho {
@@ -110,14 +233,13 @@ label:focus-visible {
 }
 
 .cabecalho h1 {
+    display: flex;
+    align-items: center;
     margin: 0;
-    padding: 0;
     color: var(--preto);
     font-size: 22px;
     font-weight: 700;
     line-height: 1;
-    display: flex;
-    align-items: center;
     white-space: nowrap;
 }
 
@@ -131,40 +253,27 @@ label:focus-visible {
 }
 
 .navegacao a {
-    position: relative;
     display: flex;
     align-items: center;
     height: 100%;
     padding: 0 4px;
     color: var(--preto);
-    text-decoration: none;
+    border-bottom: 3px solid transparent;
     font-size: 15px;
     font-weight: 700;
-    border-bottom: 3px solid transparent;
+    text-decoration: none;
     white-space: nowrap;
-    transition: border-color 0.2s ease, color 0.2s ease;
+    transition: border-color var(--transicao), color var(--transicao);
 }
 
 .navegacao a:hover {
     border-bottom-color: var(--amarelo);
 }
 
-/* Botão estilo "Entrar" do site oficial */
 .botao-carrinho {
     justify-self: end;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 9px;
-    padding: 11px 22px;
-    background-color: var(--amarelo);
-    color: var(--preto) !important;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 15px;
-    font-weight: 700;
     white-space: nowrap;
-    transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .botao-carrinho img {
@@ -173,21 +282,14 @@ label:focus-visible {
     object-fit: contain;
 }
 
-.botao-carrinho:hover {
-    background-color: var(--amarelo-hover);
-    transform: translateY(-1px);
-}
-
 
 /* ========================================
-   3. BANNER PRINCIPAL (FULL WIDTH)
+   5. BANNER PRINCIPAL
 ======================================== */
 
 .banner-principal {
     position: relative;
     width: 100%;
-    margin: 0;
-    padding: 0;
     background-color: var(--preto);
 }
 
@@ -204,12 +306,12 @@ label:focus-visible {
     padding: 13px 28px;
     background-color: var(--branco);
     color: var(--preto);
-    border-radius: 5px;
-    text-decoration: none;
+    border-radius: var(--radius-sm);
     font-size: 15px;
     font-weight: 700;
+    text-decoration: none;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-    transition: all 0.2s ease;
+    transition: background-color var(--transicao), transform var(--transicao);
 }
 
 .banner-botao:hover {
@@ -219,28 +321,14 @@ label:focus-visible {
 
 
 /* ========================================
-   4. PROMOÇÕES (DESTAQUES DO CARDÁPIO)
+   6. PROMOÇÕES (DESTAQUES DO CARDÁPIO)
 ======================================== */
 
 .promocoes {
     max-width: 1280px;
     margin: 0 auto;
     padding: 70px 32px 40px;
-    text-align: left;
     background-color: var(--branco);
-}
-
-.promocoes h2 {
-    margin: 0 0 6px;
-    color: var(--preto);
-    font-size: 32px;
-    font-weight: 700;
-}
-
-.promocoes > p {
-    margin: 0;
-    color: var(--texto-secundario);
-    font-size: 16px;
 }
 
 .promocoes-container {
@@ -254,23 +342,15 @@ label:focus-visible {
 .promocao-item {
     position: relative;
     display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
     gap: 24px;
     width: 100%;
     padding: 24px 28px;
-    background-color: var(--branco);
-    border: 1px solid var(--borda);
-    border-radius: 12px;
-    box-shadow: var(--sombra-card);
-    text-align: left;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.promocao-item:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--sombra-card-hover);
+.promocao-item a {
+    padding: 10px 20px;
+    font-size: 14px;
 }
 
 /* Card Destaque Esquerda */
@@ -278,11 +358,11 @@ label:focus-visible {
     grid-row: 1 / 3;
     flex-direction: column;
     justify-content: center;
-    text-align: center;
     padding: 36px 28px;
     background: linear-gradient(160deg, var(--vermelho) 0%, var(--vermelho-escuro) 100%);
     color: var(--branco);
     border: none;
+    text-align: center;
 }
 
 .promocao-item:first-child::before {
@@ -293,10 +373,10 @@ label:focus-visible {
     padding: 5px 12px;
     background-color: var(--amarelo);
     color: var(--preto);
-    font-family: "Fredoka", sans-serif;
+    border-radius: 4px;
+    font-family: var(--font-titulo);
     font-size: 12px;
     font-weight: 700;
-    border-radius: 4px;
 }
 
 .promocao-item:first-child img {
@@ -313,24 +393,20 @@ label:focus-visible {
 }
 
 .promocao-item:first-child h3 {
+    margin: 12px 0 4px;
     color: var(--branco);
     font-size: 30px;
-    margin: 12px 0 4px;
 }
 
 .promocao-item:first-child p {
+    margin: 0 0 22px;
     color: var(--amarelo);
     font-size: 26px;
-    margin: 0 0 22px;
 }
 
 .promocao-item:first-child a {
-    display: inline-block;
     width: 80%;
     padding: 13px 24px;
-    background-color: var(--amarelo);
-    color: var(--preto);
-    border: none;
     font-size: 15px;
 }
 
@@ -354,38 +430,20 @@ label:focus-visible {
 
 .promocao-item:not(:first-child) h3 {
     margin: 0 0 4px;
-    font-size: 22px;
     color: var(--preto);
+    font-size: 22px;
 }
 
 .promocao-item:not(:first-child) p {
     margin: 0 0 14px;
-    font-size: 20px;
     color: var(--texto-secundario);
+    font-size: 20px;
     font-weight: 700;
-}
-
-.promocao-item a {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: var(--amarelo);
-    color: var(--preto);
-    border-radius: 5px;
-    text-decoration: none;
-    font-family: "Fredoka", sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    text-align: center;
-    transition: background-color 0.2s ease;
-}
-
-.promocao-item a:hover {
-    background-color: var(--amarelo-hover);
 }
 
 
 /* ========================================
-   5. CUPONS
+   7. CUPONS
 ======================================== */
 
 .cupons {
@@ -400,41 +458,27 @@ label:focus-visible {
     max-width: 100%;
     max-height: 500px;
     height: auto;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     box-shadow: var(--sombra-card);
     object-fit: contain;
 }
 
 
 /* ========================================
-   6. CARDÁPIO E ABAS SUBLINHADAS (IGUAL AO SITE)
+   8. CARDÁPIO E FILTRO DE ABAS
 ======================================== */
 
 #cardapio {
     max-width: 1280px;
     margin: 0 auto;
     padding: 50px 32px 80px;
-    text-align: left;
     background-color: var(--branco);
-}
-
-#cardapio h2 {
-    margin: 0 0 6px;
-    color: var(--preto);
-    font-size: 32px;
-}
-
-#cardapio > p {
-    margin: 0;
-    color: var(--texto-secundario);
-    font-size: 16px;
 }
 
 input[name="categorias"] {
     display: none;
 }
 
-/* Barra de categorias com linha inferior igual à imagem oficial */
 .botoes-abas {
     display: flex;
     flex-wrap: wrap;
@@ -445,13 +489,12 @@ input[name="categorias"] {
 
 .botoes-abas label {
     padding: 12px 4px;
-    background-color: transparent;
     color: var(--texto-secundario);
     border-bottom: 4px solid transparent;
-    cursor: pointer;
     font-size: 16px;
     font-weight: 700;
-    transition: color 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    transition: color var(--transicao), border-color var(--transicao);
 }
 
 .botoes-abas label:hover {
@@ -473,11 +516,7 @@ input[name="categorias"] {
     display: none;
 }
 
-
-/* ========================================
-   7. GRID DE PRODUTOS (CARDS BRANCOS LIMPOS)
-======================================== */
-
+/* Grid de Produtos */
 .cardapio-container {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -491,16 +530,6 @@ input[name="categorias"] {
     justify-content: space-between;
     min-width: 0;
     padding: 24px 20px;
-    background-color: var(--branco);
-    border: 1px solid var(--borda);
-    border-radius: 12px;
-    box-shadow: var(--sombra-card);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.cardapio-item:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--sombra-card-hover);
 }
 
 .cardapio-item img {
@@ -545,13 +574,13 @@ input[name="categorias"] {
     align-items: center;
     gap: 8px;
     width: 100%;
-    margin: 0 0 16px;
+    margin-bottom: 16px;
 }
 
 .label-opcao {
+    color: var(--texto-secundario);
     font-size: 13px;
     font-weight: 700;
-    color: var(--texto-secundario);
 }
 
 .seletor-visual-tipo {
@@ -562,27 +591,23 @@ input[name="categorias"] {
     padding: 4px;
     background-color: var(--superficie);
     border: 1px solid var(--borda);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
 }
 
 .opcao-btn {
     padding: 8px 10px;
     background-color: transparent;
     color: var(--texto-secundario);
-    border: none;
     border-radius: 6px;
-    font-family: "Nunito", sans-serif;
+    font-family: var(--font-corpo);
     font-size: 13px;
     font-weight: 800;
-    box-shadow: none;
-    transition: all 0.2s ease;
 }
 
 .opcao-btn:hover {
-    color: var(--preto);
     background-color: rgba(0, 0, 0, 0.03);
+    color: var(--preto);
     transform: none;
-    box-shadow: none;
 }
 
 .opcao-btn.ativo {
@@ -595,24 +620,11 @@ input[name="categorias"] {
     width: 100%;
     margin-top: auto;
     padding: 12px 20px;
-    background-color: var(--amarelo);
-    color: var(--preto);
-    border: none;
-    border-radius: 5px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.15s ease;
-}
-
-.botao-adicionar:hover {
-    background-color: var(--amarelo-hover);
-    transform: translateY(-1px);
 }
 
 
 /* ========================================
-   8. MODAL WIZARD DO COMBO (ESTILO TOTEM)
+   9. MODAL WIZARD DO COMBO (ESTILO TOTEM)
 ======================================== */
 
 .modal-combo {
@@ -673,7 +685,6 @@ input[name="categorias"] {
 .modal-combo-fechar:hover {
     background-color: var(--preto);
     color: var(--branco);
-    box-shadow: none;
     transform: none;
 }
 
@@ -691,10 +702,10 @@ input[name="categorias"] {
     background-color: var(--superficie);
     color: var(--texto-secundario);
     border-radius: 4px;
-    font-family: "Fredoka", sans-serif;
+    font-family: var(--font-titulo);
     font-size: 13px;
     font-weight: 700;
-    transition: all 0.2s ease;
+    transition: all var(--transicao);
 }
 
 .totem-passo-ind.ativo {
@@ -742,22 +753,16 @@ input[name="categorias"] {
 }
 
 .card-foto-totem {
-    display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
     padding: 14px 8px;
     background-color: var(--branco);
-    color: var(--preto);
     border: 2px solid var(--borda);
     border-radius: 10px;
-    font-family: "Fredoka", sans-serif;
-    box-shadow: none;
-    transition: all 0.2s ease;
+    transition: all var(--transicao);
 }
 
 .card-foto-totem:hover {
+    background-color: var(--branco);
     border-color: var(--amarelo);
     transform: translateY(-2px);
     box-shadow: var(--sombra-card);
@@ -772,7 +777,7 @@ input[name="categorias"] {
     width: 66px;
     height: 66px;
     object-fit: contain;
-    transition: transform 0.2s ease;
+    transition: transform var(--transicao);
 }
 
 .card-foto-totem:hover img,
@@ -790,9 +795,9 @@ input[name="categorias"] {
 }
 
 .card-foto-totem strong {
+    color: var(--preto);
     font-size: 14px;
     line-height: 1.2;
-    color: var(--preto);
 }
 
 .modal-combo-preco {
@@ -804,12 +809,12 @@ input[name="categorias"] {
     padding: 14px 18px;
     background-color: var(--superficie);
     border: 1px solid var(--borda);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
 }
 
 .modal-combo-preco > strong {
     color: var(--preto);
-    font-family: "Fredoka", sans-serif;
+    font-family: var(--font-titulo);
     font-size: 22px;
 }
 
@@ -822,13 +827,10 @@ input[name="categorias"] {
 .modal-combo-botoes button {
     flex: 1;
     padding: 13px 18px;
-    font-size: 15px;
-    border-radius: 5px;
 }
 
 .botao-cancelar-combo {
     background-color: var(--superficie);
-    color: var(--preto);
     border: 1px solid var(--borda);
 }
 
@@ -836,38 +838,25 @@ input[name="categorias"] {
     background-color: #EFEFEF;
 }
 
-.botao-confirmar-combo {
-    background-color: var(--amarelo);
-    color: var(--preto);
-}
-
-.botao-confirmar-combo:hover {
-    background-color: var(--amarelo-hover);
-}
-
 
 /* ========================================
-   9. SOBRE O PROJETO (CÍRCULOS AMARELOS OFICIAIS)
+   10. SOBRE O PROJETO & RODAPÉ
 ======================================== */
 
 .sobre {
     padding: 70px 32px;
-    text-align: center;
     background-color: var(--branco);
     border-top: 1px solid var(--borda);
+    text-align: center;
 }
 
 .sobre h2 {
-    margin: 0 0 12px;
-    color: var(--preto);
-    font-size: 32px;
+    margin-bottom: 12px;
 }
 
 .sobre > p {
     max-width: 680px;
     margin: 0 auto;
-    color: var(--texto-secundario);
-    font-size: 16px;
     line-height: 1.65;
 }
 
@@ -889,17 +878,7 @@ input[name="categorias"] {
 .diferencial-item {
     width: 310px;
     padding: 28px 24px;
-    background-color: var(--branco);
-    border: 1px solid var(--borda);
-    border-radius: 12px;
-    box-shadow: var(--sombra-card);
     text-align: left;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.diferencial-item:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--sombra-card-hover);
 }
 
 .diferencial-item h4 {
@@ -912,22 +891,14 @@ input[name="categorias"] {
     margin: 0;
     color: var(--texto-secundario);
     font-size: 15px;
-    line-height: 1.5;
 }
 
-
-/* ========================================
-   10. RODAPÉ OFICIAL (BRANCO COM FAIXA AMARELA)
-======================================== */
-
+/* Rodapé */
 .rodape {
-    position: relative;
-    margin: 0;
     padding: 56px 40px 32px;
     background-color: var(--branco);
     color: var(--preto);
     border-top: 12px solid var(--amarelo);
-    text-align: left;
 }
 
 .rodape-container {
@@ -945,7 +916,6 @@ input[name="categorias"] {
 
 .rodape h3 {
     margin: 0 0 14px;
-    color: var(--preto);
     font-size: 18px;
     font-weight: 700;
 }
@@ -954,16 +924,15 @@ input[name="categorias"] {
     margin: 0 0 8px;
     color: var(--texto-secundario);
     font-size: 14px;
-    line-height: 1.5;
 }
 
 .rodape a {
     display: block;
     margin-bottom: 10px;
     color: var(--texto-secundario);
-    text-decoration: none;
     font-size: 14px;
-    transition: color 0.2s ease;
+    text-decoration: none;
+    transition: color var(--transicao);
 }
 
 .rodape a:hover {
@@ -983,7 +952,8 @@ input[name="categorias"] {
     border-top: 1px solid var(--borda);
 }
 
-.rodape-final p {
+.rodape-final p,
+.rodape .acesso-funcionario {
     margin: 0;
     color: var(--texto-secundario);
     font-size: 13px;
@@ -991,9 +961,6 @@ input[name="categorias"] {
 
 .rodape .acesso-funcionario {
     display: inline-block;
-    margin: 0;
-    color: var(--texto-secundario);
-    font-size: 13px;
 }
 
 .rodape .acesso-funcionario:hover {
@@ -1002,30 +969,8 @@ input[name="categorias"] {
 
 
 /* ========================================
-   11. BOTÕES E FORMULÁRIOS GERAIS
+   11. FORMULÁRIOS E COMPONENTES DE PÁGINA
 ======================================== */
-
-button {
-    padding: 11px 22px;
-    background-color: var(--amarelo);
-    color: var(--preto);
-    border: none;
-    border-radius: 5px;
-    font-family: "Fredoka", sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.15s ease;
-}
-
-button:hover {
-    background-color: var(--amarelo-hover);
-    transform: translateY(-1px);
-}
-
-button:active {
-    transform: scale(0.98);
-}
 
 form label {
     font-size: 15px;
@@ -1042,13 +987,6 @@ form input {
     font-size: 15px;
 }
 
-form button[type="submit"] {
-    padding: 11px 22px;
-    background-color: var(--amarelo);
-    color: var(--preto);
-    border-radius: 5px;
-}
-
 .botao-voltar {
     display: inline-flex;
     align-items: center;
@@ -1057,12 +995,12 @@ form button[type="submit"] {
     background-color: var(--branco);
     color: var(--preto);
     border: 1px solid var(--borda);
-    border-radius: 5px;
-    text-decoration: none;
-    font-family: "Fredoka", sans-serif;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-titulo);
     font-size: 15px;
     font-weight: 700;
-    transition: 0.2s ease;
+    text-decoration: none;
+    transition: background-color var(--transicao), border-color var(--transicao);
 }
 
 .botao-voltar:hover {
@@ -1073,17 +1011,6 @@ form button[type="submit"] {
 .titulo-pagina {
     margin-bottom: 35px;
     text-align: center;
-}
-
-.titulo-pagina h2 {
-    margin-bottom: 6px;
-    color: var(--preto);
-    font-size: 32px;
-}
-
-.titulo-pagina p {
-    color: var(--texto-secundario);
-    font-size: 16px;
 }
 
 
@@ -1098,22 +1025,12 @@ form button[type="submit"] {
     padding: 24px;
 }
 
-.pagina-carrinho h2 {
-    color: var(--preto);
-    font-size: 32px;
-}
-
-.pagina-carrinho > p {
-    color: var(--texto-secundario);
-    font-size: 16px;
-}
-
 .resumo-carrinho {
     margin-top: 28px;
     padding: 26px;
     background-color: var(--superficie);
     border: 1px solid var(--borda);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
 }
 
 .resumo-carrinho h3 {
@@ -1138,11 +1055,6 @@ form button[type="submit"] {
     margin-top: 16px;
 }
 
-#finalizar-pedido {
-    background-color: var(--amarelo);
-    color: var(--preto);
-}
-
 #finalizar-pedido:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -1163,10 +1075,6 @@ form button[type="submit"] {
 .item-carrinho {
     margin: 16px 0;
     padding: 22px;
-    background-color: var(--branco);
-    border: 1px solid var(--borda);
-    border-radius: 12px;
-    box-shadow: var(--sombra-card);
 }
 
 .item-carrinho h3 {
@@ -1193,7 +1101,6 @@ form button[type="submit"] {
     min-width: 38px;
     padding: 8px 14px;
     background-color: var(--superficie);
-    color: var(--preto);
     border: 1px solid var(--borda);
 }
 
@@ -1213,10 +1120,10 @@ form button[type="submit"] {
     color: var(--vermelho);
 }
 
-.quantidade-produto,
-.subtotal-produto {
+.item-carrinho .quantidade-produto,
+.item-carrinho .subtotal-produto {
+    color: var(--preto);
     font-weight: 800;
-    color: var(--preto) !important;
 }
 
 
@@ -1237,7 +1144,7 @@ form button[type="submit"] {
     padding: 36px;
     background-color: var(--branco);
     border: 1px solid var(--borda);
-    border-radius: 14px;
+    border-radius: var(--radius-xl);
     box-shadow: var(--sombra-card);
     text-align: center;
 }
@@ -1252,7 +1159,7 @@ form button[type="submit"] {
     background-color: var(--amarelo);
     color: var(--preto);
     border-radius: 50%;
-    font-family: "Fredoka", sans-serif;
+    font-family: var(--font-titulo);
     font-size: 34px;
     font-weight: 700;
 }
@@ -1275,15 +1182,15 @@ form button[type="submit"] {
     background-color: var(--amarelo-suave);
     border: 1px solid var(--amarelo);
     border-radius: 6px;
-    font-family: "Fredoka", sans-serif;
+    font-family: var(--font-titulo);
     font-size: 18px;
     font-weight: 700;
 }
 
 .cartao-confirmacao h3 {
     margin-top: 24px;
-    text-align: left;
     font-size: 20px;
+    text-align: left;
 }
 
 .itens-confirmacao {
@@ -1292,8 +1199,8 @@ form button[type="submit"] {
 
 .item-confirmacao {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 15px;
     padding: 14px 0;
     border-bottom: 1px solid var(--borda);
@@ -1312,18 +1219,18 @@ form button[type="submit"] {
 
 .total-confirmacao {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     margin-top: 20px;
     padding: 16px 20px;
     background-color: var(--superficie);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     font-size: 18px;
 }
 
 .total-confirmacao strong {
     color: var(--preto);
-    font-family: "Fredoka", sans-serif;
+    font-family: var(--font-titulo);
     font-size: 22px;
 }
 
@@ -1334,20 +1241,9 @@ form button[type="submit"] {
 }
 
 .botao-voltar-cardapio {
-    display: inline-block;
     margin-top: 12px;
     padding: 13px 28px;
-    background-color: var(--amarelo);
-    color: var(--preto);
-    border-radius: 5px;
-    text-decoration: none;
-    font-family: "Fredoka", sans-serif;
     font-size: 16px;
-    transition: 0.2s ease;
-}
-
-.botao-voltar-cardapio:hover {
-    background-color: var(--amarelo-hover);
 }
 
 
@@ -1370,7 +1266,7 @@ form button[type="submit"] {
     padding: 36px;
     background-color: var(--branco);
     border: 1px solid var(--borda);
-    border-radius: 14px;
+    border-radius: var(--radius-xl);
     box-shadow: var(--sombra-card);
 }
 
@@ -1385,15 +1281,15 @@ form button[type="submit"] {
 .login-container h1 {
     margin: 0 0 4px;
     color: var(--preto);
-    text-align: center;
     font-size: 26px;
+    text-align: center;
 }
 
 .login-container h2 {
     margin: 0 0 24px;
     color: var(--texto-secundario);
-    text-align: center;
     font-size: 16px;
+    text-align: center;
 }
 
 .login-container form {
@@ -1405,11 +1301,6 @@ form button[type="submit"] {
 .login-container input {
     width: 100%;
     padding: 12px;
-    background-color: var(--branco);
-    border: 1px solid var(--borda);
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 15px;
 }
 
 .login-container input:focus {
@@ -1417,16 +1308,16 @@ form button[type="submit"] {
 }
 
 .login-container button {
-    margin-top: 10px;
     width: 100%;
+    margin-top: 10px;
 }
 
 .login-container > a {
     display: block;
     margin-top: 20px;
     color: var(--texto-secundario);
-    text-align: center;
     font-size: 14px;
+    text-align: center;
     text-decoration: none;
 }
 
@@ -1436,10 +1327,11 @@ form button[type="submit"] {
 
 .erro-login {
     color: var(--vermelho);
-    text-align: center;
     font-size: 14px;
+    text-align: center;
 }
 
+/* Painel Administrativo */
 .painel-funcionarios {
     width: 100%;
     max-width: 1140px;
@@ -1455,13 +1347,13 @@ form button[type="submit"] {
 }
 
 .resumo-item {
-    padding: 20px;
-    border-radius: 10px;
-    background-color: var(--superficie);
-    border: 1px solid var(--borda);
     display: flex;
     flex-direction: column;
     gap: 6px;
+    padding: 20px;
+    background-color: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
     text-align: center;
 }
 
@@ -1471,21 +1363,21 @@ form button[type="submit"] {
 }
 
 .resumo-item strong {
-    font-family: "Fredoka", sans-serif;
-    font-size: 28px;
     color: var(--preto);
+    font-family: var(--font-titulo);
+    font-size: 28px;
 }
 
 .resumo-item.pendente {
-    background-color: #FFF8E6;
+    background-color: var(--amarelo-suave);
 }
 
 .resumo-item.preparo {
-    background-color: #EBF3FF;
+    background-color: var(--status-preparo-bg);
 }
 
 .resumo-item.concluido {
-    background-color: #E7F7EC;
+    background-color: var(--status-concluido-bg);
 }
 
 .filtros-pedidos {
@@ -1498,14 +1390,9 @@ form button[type="submit"] {
 
 .filtro-pedido {
     padding: 9px 20px;
-    border: 1px solid var(--borda);
-    border-radius: 5px;
     background-color: var(--branco);
     color: var(--texto-secundario);
-    cursor: pointer;
-    font-family: "Fredoka", sans-serif;
-    font-size: 15px;
-    transition: 0.2s;
+    border: 1px solid var(--borda);
 }
 
 .filtro-pedido:hover,
@@ -1523,10 +1410,6 @@ form button[type="submit"] {
 
 .pedido-funcionario {
     padding: 24px;
-    background-color: var(--branco);
-    border: 1px solid var(--borda);
-    border-radius: 12px;
-    box-shadow: var(--sombra-card);
 }
 
 .pedido-funcionario[hidden] {
@@ -1538,11 +1421,11 @@ form button[type="submit"] {
 }
 
 .pedido-funcionario.status-em-preparo {
-    border-left: 5px solid #2878D0;
+    border-left: 5px solid var(--status-preparo-borda);
 }
 
 .pedido-funcionario.status-concluído {
-    border-left: 5px solid #299B50;
+    border-left: 5px solid var(--status-concluido-borda);
 }
 
 .pedido-cabecalho {
@@ -1570,18 +1453,18 @@ form button[type="submit"] {
 }
 
 .status-pendente .status-pedido {
-    background-color: #FFF8E6;
-    color: #8A5B00;
+    background-color: var(--amarelo-suave);
+    color: var(--status-pendente-texto);
 }
 
 .status-em-preparo .status-pedido {
-    background-color: #EBF3FF;
-    color: #15569B;
+    background-color: var(--status-preparo-bg);
+    color: var(--status-preparo-texto);
 }
 
 .status-concluído .status-pedido {
-    background-color: #E7F7EC;
-    color: #176B34;
+    background-color: var(--status-concluido-bg);
+    color: var(--status-concluido-texto);
 }
 
 .data-pedido {
@@ -1600,8 +1483,8 @@ form button[type="submit"] {
 
 .produto-pedido {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 15px;
     padding: 12px 0;
     border-bottom: 1px solid var(--borda);
@@ -1626,478 +1509,72 @@ form button[type="submit"] {
     margin: 18px 0;
     padding: 14px 16px;
     background-color: var(--superficie);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: var(--preto);
-    text-align: right;
     font-size: 21px;
     font-weight: 700;
+    text-align: right;
 }
 
+/* Completado onde o código original cortou */
 .form-status {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
+    margin-top: 16px;
 }
 
 .form-status select {
-    width: 100%;
-}
-
-.form-excluir-pedido {
-    margin-top: 10px;
-}
-
-.botao-excluir-pedido {
-    width: 100%;
-    padding: 11px;
-    background-color: transparent;
-    color: var(--vermelho);
-    border: 1px solid rgba(219, 0, 7, 0.3);
-    border-radius: 5px;
-    font-family: "Fredoka", sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.botao-excluir-pedido:hover {
-    background-color: var(--vermelho);
-    color: var(--branco);
-    transform: none;
-}
-
-.sem-pedidos {
-    padding: 45px 20px;
-    background-color: var(--superficie);
-    border-radius: 12px;
-    text-align: center;
-}
-
-.sem-pedidos h3 {
-    color: var(--preto);
-    font-size: 22px;
-}
-
-.sem-pedidos p {
-    color: var(--texto-secundario);
-    font-size: 15px;
-}
-
-.nenhum-filtro {
-    text-align: center;
-    padding: 25px;
-    font-size: 15px;
-    color: var(--texto-secundario);
+    flex: 1;
 }
 
 
 /* ========================================
-   15. NOTIFICAÇÃO TOAST DE ITEM ADICIONADO
+   15. RESPONSIVIDADE (TABLET E MOBILE)
 ======================================== */
 
-.toast-carrinho {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    min-width: 280px;
-    max-width: 380px;
-    padding: 14px 18px;
-    background-color: var(--preto);
-    color: var(--branco);
-    border-radius: 10px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(24px);
-    pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.3s ease;
-}
-
-.toast-carrinho.visivel {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.toast-icone {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    flex-shrink: 0;
-    background-color: var(--amarelo);
-    color: var(--preto);
-    border-radius: 50%;
-    font-family: "Fredoka", sans-serif;
-    font-size: 17px;
-    font-weight: 700;
-}
-
-.toast-texto {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    text-align: left;
-}
-
-.toast-texto strong {
-    font-family: "Fredoka", sans-serif;
-    font-size: 15px;
-    color: var(--branco);
-}
-
-.toast-texto span {
-    font-size: 13px;
-    color: #CCCCCC;
-}
-
-.toast-barra {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 3px;
-    width: 100%;
-    background-color: var(--amarelo);
-    transform-origin: left;
-}
-
-.toast-carrinho.visivel .toast-barra {
-    animation: diminuir-barra 2.8s linear forwards;
-}
-
-@keyframes diminuir-barra {
-    from { transform: scaleX(1); }
-    to   { transform: scaleX(0); }
-}
-
-@keyframes pulo-carrinho {
-    0%   { transform: scale(1); }
-    35%  { transform: scale(1.12); }
-    70%  { transform: scale(0.96); }
-    100% { transform: scale(1); }
-}
-
-.botao-carrinho.animar-pulo {
-    animation: pulo-carrinho 0.4s ease;
-}
-
-.botao-adicionar.adicionado {
-    background-color: #299B50 !important;
-    color: var(--branco) !important;
-}
-
-
-/* ========================================
-   16. RESPONSIVIDADE
-======================================== */
-
-@media (max-width: 960px) {
+@media (max-width: 900px) {
     .cabecalho {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        height: auto;
-        padding: 16px 20px;
-        gap: 14px;
+        padding: 0 20px;
     }
 
-    .navegacao {
-        height: auto;
-        gap: 16px;
-    }
-
-    .promocoes,
-    #cardapio {
-        text-align: center;
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-
-    .promocoes-container {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
+    .promocoes-container,
+    .cardapio-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .promocao-item:first-child {
         grid-row: auto;
-    }
-
-    .botoes-abas {
-        justify-content: center;
-        gap: 16px;
-    }
-
-    .cardapio-container {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px;
-    }
-}
-
-@media (max-width: 750px) {
-    .lista-pedidos {
-        grid-template-columns: 1fr;
+        grid-column: 1 / -1;
     }
 
     .resumo-pedidos {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .cartao-confirmacao {
-        padding: 24px;
+    .lista-pedidos {
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 600px) {
     .cabecalho {
-        position: relative;
-        flex-direction: column;
-        padding: 16px;
+        grid-template-columns: 1fr auto;
+        height: auto;
+        padding: 14px 16px;
     }
 
-    .banner-botao {
-        left: 5%;
-        bottom: 8%;
-        padding: 8px 16px;
-        font-size: 13px;
+    .navegacao {
+        display: none;
     }
 
-    .promocoes h2,
-    #cardapio h2,
-    .sobre h2 {
-        font-size: 26px;
-    }
-
-    .promocao-item:not(:first-child) {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .cardapio-container {
-        grid-template-columns: 1fr;
-    }
-
-    .grid-totem-fotos.grid-3,
+    .promocoes-container,
+    .cardapio-container,
     .grid-totem-fotos.grid-4 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .totem-passo-ind {
-        font-size: 12px;
-        padding: 5px 10px;
-    }
-
-    .rodape-final {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .toast-carrinho {
-        left: 16px;
-        right: 16px;
-        bottom: 16px;
-        max-width: none;
-    }
-}
-/* ========================================
-   17. CLUBE MÉQUI (FAIXA E PÁGINA DO CLIENTE)
-======================================== */
-
-.faixa-clube-mequi {
-    width: 100%;
-    padding: 28px 40px;
-    background-color: var(--amarelo);
-    color: var(--preto);
-}
-
-.faixa-clube-conteudo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.faixa-clube-conteudo h3 {
-    margin: 0 0 4px;
-    font-size: 24px;
-    color: var(--preto);
-}
-
-.faixa-clube-conteudo p {
-    margin: 0;
-    font-size: 15px;
-    color: var(--preto);
-    opacity: 0.85;
-}
-
-.botao-faixa-clube {
-    padding: 12px 26px;
-    background-color: var(--branco);
-    color: var(--preto);
-    border-radius: 5px;
-    text-decoration: none;
-    font-family: "Fredoka", sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-}
-
-.botao-faixa-clube:hover {
-    transform: translateY(-2px);
-}
-
-/* Página do Clube */
-.pagina-clube {
-    max-width: 1180px;
-    margin: 45px auto 80px;
-    padding: 0 24px;
-}
-
-.cartao-clube-topo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 24px;
-    padding: 36px;
-    background-color: var(--preto);
-    color: var(--branco);
-    border-radius: 16px;
-    margin-bottom: 45px;
-}
-
-.selo-membro {
-    display: inline-block;
-    padding: 5px 12px;
-    background-color: var(--amarelo);
-    color: var(--preto);
-    border-radius: 4px;
-    font-family: "Fredoka", sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.cartao-clube-topo h2 {
-    margin: 0 0 6px;
-    font-size: 32px;
-    color: var(--branco);
-}
-
-.cartao-clube-topo p {
-    margin: 0;
-    color: #CCCCCC;
-    font-size: 15px;
-}
-
-.caixa-pontos {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    padding: 20px 28px;
-    background-color: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 188, 13, 0.4);
-    border-radius: 12px;
-}
-
-.caixa-pontos span {
-    font-size: 13px;
-    color: #CCCCCC;
-}
-
-.caixa-pontos strong {
-    font-family: "Fredoka", sans-serif;
-    font-size: 36px;
-    color: var(--amarelo);
-    line-height: 1.1;
-}
-
-.link-sair-clube {
-    margin-top: 8px;
-    font-size: 13px;
-    color: #AAAAAA;
-    text-decoration: underline;
-}
-
-.vitrine-recompensas h3 {
-    margin: 0 0 4px;
-    font-size: 26px;
-}
-
-.vitrine-recompensas > p {
-    margin: 0 0 28px;
-    color: var(--texto-secundario);
-}
-
-/* Telas de Login / Cadastro do Clube */
-.clube-auth-header {
-    text-align: center;
-    max-width: 600px;
-    margin: 0 auto 36px;
-}
-
-.clube-auth-header h2 {
-    margin: 6px 0 8px;
-    font-size: 32px;
-}
-
-.clube-auth-header p {
-    margin: 0;
-    color: var(--texto-secundario);
-}
-
-.clube-forms-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-.clube-box {
-    padding: 32px;
-    background-color: var(--branco);
-    border: 1px solid var(--borda);
-    border-radius: 14px;
-    box-shadow: var(--sombra-card);
-}
-
-.clube-box.destaque-cadastro {
-    border-top: 5px solid var(--amarelo);
-}
-
-.clube-box h3 {
-    margin: 0 0 20px;
-    font-size: 22px;
-}
-
-.clube-box form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.clube-box button {
-    margin-top: 8px;
-    width: 100%;
-}
-
-@media (max-width: 750px) {
-    .clube-forms-grid {
         grid-template-columns: 1fr;
     }
 
-    .caixa-pontos {
-        align-items: flex-start;
-        width: 100%;
+    .grid-totem-fotos.grid-3 {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
