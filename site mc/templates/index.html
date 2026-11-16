@@ -2,603 +2,477 @@
 <html lang="pt-BR">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mequi Experience</title>
 
-  <title>Mequi Experience</title>
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Fontes do Google (Estilo Méqui) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- CSS & JS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 
 <body>
 
-  <!-- CABEÇALHO -->
-  <header class="cabecalho" id="inicio">
+    <!-- ========================================
+         1. CABEÇALHO
+    ======================================== -->
+    <header class="cabecalho" id="inicio">
+        <a href="#inicio" class="logo-container">
+            <img
+                src="https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG17.png"
+                class="logo"
+                alt="Logo do Mequi"
+            >
+            <h1>Mequi Experience</h1>
+        </a>
 
-    <div class="logo-container">
-      <img
-        src="https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG17.png"
-        class="logo"
-        alt="Logo do McDonald's"
-      >
+        <nav class="navegacao" aria-label="Navegação principal">
+            <a href="#inicio">Início</a>
+            <a href="#promocoes">Promoções</a>
+            <a href="#cardapio">Cardápio</a>
+            <a href="#sobre">Sobre nós</a>
+            <a href="{{ url_for('clube') }}">
+                {% if cliente %}
+                    ⭐ {{ cliente['nome'] }} ({{ cliente['pontos'] }} pts)
+                {% else %}
+                    ⭐ Clube Méqui
+                {% endif %}
+            </a>
+        </nav>
 
-      <h1>Mequi Experience</h1>
-    </div>
-
-<nav class="navegacao" aria-label="Navegação principal">
-      <a href="#inicio">Início</a>
-      <a href="#promocoes">Promoções</a>
-      <a href="#cardapio">Cardápio</a>
-      <a href="#sobre">Sobre nós</a>
-      <a href="{{ url_for('clube') }}" style="color: var(--preto);">
-        {% if cliente %}
-          ⭐ {{ cliente['nome'] }} ({{ cliente['pontos'] }} pts)
-        {% else %}
-          ⭐ Clube Méqui
-        {% endif %}
-      </a>
-    </nav>
-
-    <a href="{{ url_for('carrinho') }}" class="botao-carrinho">
-      <img
-        src="{{ url_for('static', filename='imagens/carrinho.png') }}"
-        alt=""
-      >
-      <span>Carrinho</span>
-    </a>
-
-  </header>
-
-
-  <!-- BANNER PRINCIPAL -->
-  <section class="banner-principal" aria-label="Destaque principal">
-
-    <img
-      src="{{ url_for('static', filename='imagens/banner.png') }}"
-      alt="Destaque do Mequi Experience"
-    >
-
-    <a href="#cardapio" class="banner-botao">
-      Ver cardápio
-    </a>
-
-  </section>
+        <a href="{{ url_for('carrinho') }}" class="botao-carrinho">
+            <img
+                src="{{ url_for('static', filename='imagens/carrinho.png') }}"
+                alt=""
+                aria-hidden="true"
+            >
+            <span>Carrinho</span>
+        </a>
+    </header>
 
 
-  <!-- PROMOÇÕES -->
-  <section class="promocoes" id="promocoes">
-
-    <h2>Ofertas que dão água na boca!</h2>
-
-    <p>Confira alguns dos destaques do nosso cardápio.</p>
-
-    <div class="promocoes-container">
-
-      <div class="promocao-item">
+    <!-- ========================================
+         2. BANNER PRINCIPAL
+    ======================================== -->
+    <section class="banner-principal" aria-label="Destaque principal">
         <img
-          src="{{ url_for('static', filename='imagens/original.png') }}"
-          alt="Big Mac"
-          loading="lazy"
+            src="{{ url_for('static', filename='imagens/banner.png') }}"
+            alt="Destaque do Mequi Experience"
         >
 
-        <div>
-          <h3>Big Mac</h3>
-          <p>R$ 35,00</p>
-          <a href="#cardapio">Ver cardápio</a>
+        <a href="#cardapio" class="banner-botao">
+            Ver cardápio
+        </a>
+    </section>
+
+
+    <!-- ========================================
+         3. PROMOÇÕES (DESTAQUES)
+    ======================================== -->
+    <section class="promocoes" id="promocoes" aria-labelledby="titulo-promocoes">
+        <h2 id="titulo-promocoes">Ofertas que dão água na boca!</h2>
+        <p>Confira alguns dos destaques do nosso cardápio.</p>
+
+        <div class="promocoes-container">
+            <article class="promocao-item">
+                <img
+                    src="{{ url_for('static', filename='imagens/original.png') }}"
+                    alt="Big Mac"
+                    loading="lazy"
+                >
+                <div>
+                    <h3>Big Mac</h3>
+                    <p>R$ 35,00</p>
+                    <a href="#cardapio">Ver cardápio</a>
+                </div>
+            </article>
+
+            <article class="promocao-item">
+                <img
+                    src="{{ url_for('static', filename='imagens/batatag.png') }}"
+                    alt="Batata grande"
+                    loading="lazy"
+                >
+                <div>
+                    <h3>Batata grande</h3>
+                    <p>R$ 15,00</p>
+                    <a href="#cardapio">Ver cardápio</a>
+                </div>
+            </article>
+
+            <article class="promocao-item">
+                <img
+                    src="{{ url_for('static', filename='imagens/mcfluryovo.png') }}"
+                    alt="McFlurry de Ovomaltine"
+                    loading="lazy"
+                >
+                <div>
+                    <h3>McFlurry de Ovomaltine</h3>
+                    <p>R$ 18,00</p>
+                    <a href="#cardapio">Ver cardápio</a>
+                </div>
+            </article>
         </div>
-      </div>
-
-      <div class="promocao-item">
-        <img
-          src="{{ url_for('static', filename='imagens/batatag.png') }}"
-          alt="Batata grande"
-          loading="lazy"
-        >
-
-        <div>
-          <h3>Batata grande</h3>
-          <p>R$ 15,00</p>
-          <a href="#cardapio">Ver cardápio</a>
-        </div>
-      </div>
-
-      <div class="promocao-item">
-        <img
-          src="{{ url_for('static', filename='imagens/mcfluryovo.png') }}"
-          alt="McFlurry de Ovomaltine"
-          loading="lazy"
-        >
-
-        <div>
-          <h3>McFlurry de Ovomaltine</h3>
-          <p>R$ 18,00</p>
-          <a href="#cardapio">Ver cardápio</a>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
+    </section>
 
 
-  <!-- CONTEÚDO PRINCIPAL -->
-  <main>
+    <!-- ========================================
+         4. CONTEÚDO PRINCIPAL (CARDÁPIO & SOBRE)
+    ======================================== -->
+    <main>
 
-    <!-- CARDÁPIO -->
-    <section class="cardapio-abas-container" id="cardapio">
+        <!-- CARDÁPIO -->
+        <section class="cardapio-abas-container" id="cardapio" aria-labelledby="titulo-cardapio">
+            <h2 id="titulo-cardapio">Nosso cardápio</h2>
+            <p>Encontre seus produtos favoritos!</p>
 
-      <h2>Nosso cardápio</h2>
+            <!-- Filtros por Categoria (CSS puro) -->
+            <input type="radio" id="aba-todos" name="categorias" checked>
+            <input type="radio" id="aba-hamburguer" name="categorias">
+            <input type="radio" id="aba-sorvete" name="categorias">
+            <input type="radio" id="aba-acompanhamento" name="categorias">
 
-      <p>Encontre seus produtos favoritos!</p>
-
-      <!-- FILTROS -->
-      <input type="radio" id="aba-todos" name="categorias" checked>
-      <input type="radio" id="aba-hamburguer" name="categorias">
-      <input type="radio" id="aba-sorvete" name="categorias">
-      <input type="radio" id="aba-acompanhamento" name="categorias">
-
-      <div class="botoes-abas">
-
-        <label for="aba-todos">Todos</label>
-        <label for="aba-hamburguer">Hambúrgueres</label>
-        <label for="aba-sorvete">Sorvetes</label>
-        <label for="aba-acompanhamento">Acompanhamentos</label>
-
-      </div>
-
-
-      <!-- PRODUTOS -->
-      <div class="cardapio-container">
-
-        {% for produto in produtos %}
-
-        <div class="cardapio-item {{ produto['categoria'] }}">
-
-          <img
-            src="{{ url_for('static', filename='imagens/' + produto['imagem']) }}"
-            alt="{{ produto['nome'] }}"
-            loading="lazy"
-          >
-
-          <div class="descricao">
-
-            <h3>{{ produto['nome'] }}</h3>
-
-            <p class="preco-produto">
-              R$ {{ "%.2f"|format(produto['preco']) }}
-            </p>
-
-
-            <!-- ESCOLHA INDIVIDUAL OU COMBO -->
-            {% if produto['categoria'] == 'hamburguer' %}
-
-            <div class="opcoes-pedido">
-              <span class="label-opcao">Como deseja pedir?</span>
-
-              <!-- Select oculto para manter compatibilidade com seu script.js -->
-              <select class="tipo-pedido" id="tipo-{{ produto['id'] }}" data-id="{{ produto['id'] }}" hidden>
-                <option value="individual" selected>Apenas hambúrguer</option>
-                <option value="combo">Transformar em combo</option>
-              </select>
-
-              <!-- Botões visuais estilo Totem -->
-              <div class="seletor-visual-tipo">
-                <button type="button" class="opcao-btn ativo" data-valor="individual" onclick="selecionarOpcaoVisual(this)">
-                  🍔 Só lanche
-                </button>
-                <button type="button" class="opcao-btn" data-valor="combo" onclick="selecionarOpcaoVisual(this)">
-                  🍟 Combo
-                </button>
-              </div>
+            <div class="botoes-abas" role="tablist" aria-label="Categorias do cardápio">
+                <label for="aba-todos">Todos</label>
+                <label for="aba-hamburguer">Hambúrgueres</label>
+                <label for="aba-sorvete">Sorvetes</label>
+                <label for="aba-acompanhamento">Acompanhamentos</label>
             </div>
 
-            {% endif %}
+            <!-- Grid de Produtos -->
+            <div class="cardapio-container">
+                {% for produto in produtos %}
+                    <article class="cardapio-item {{ produto['categoria'] }}">
+                        <img
+                            src="{{ url_for('static', filename='imagens/' + produto['imagem']) }}"
+                            alt="{{ produto['nome'] }}"
+                            loading="lazy"
+                        >
+
+                        <div class="descricao">
+                            <h3>{{ produto['nome'] }}</h3>
+
+                            <p class="preco-produto">
+                                R$ {{ "%.2f" | format(produto['preco']) }}
+                            </p>
+
+                            {% if produto['categoria'] == 'hamburguer' %}
+                                <div class="opcoes-pedido">
+                                    <span class="label-opcao">Como deseja pedir?</span>
+
+                                    <select
+                                        class="tipo-pedido"
+                                        id="tipo-{{ produto['id'] }}"
+                                        data-id="{{ produto['id'] }}"
+                                        hidden
+                                    >
+                                        <option value="individual" selected>Apenas hambúrguer</option>
+                                        <option value="combo">Transformar em combo</option>
+                                    </select>
+
+                                    <div class="seletor-visual-tipo">
+                                        <button
+                                            type="button"
+                                            class="opcao-btn ativo"
+                                            data-valor="individual"
+                                            onclick="selecionarOpcaoVisual(this)"
+                                        >
+                                            <span aria-hidden="true">🍔</span> Só lanche
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="opcao-btn"
+                                            data-valor="combo"
+                                            onclick="selecionarOpcaoVisual(this)"
+                                        >
+                                            <span aria-hidden="true">🍟</span> Combo
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <button
+                                type="button"
+                                class="botao-adicionar"
+                                data-id="{{ produto['id'] }}"
+                                data-nome="{{ produto['nome'] }}"
+                                data-preco="{{ produto['preco'] }}"
+                                {% if produto['categoria'] == 'hamburguer' %}
+                                    data-preco-combo="{{ combos.get(produto['id'], produto['preco']) }}"
+                                {% endif %}
+                            >
+                                Adicionar ao carrinho
+                            </button>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
 
 
-            <!-- BOTÃO DE ADICIONAR -->
-            <button
-              type="button"
-              class="botao-adicionar"
-              data-id="{{ produto['id'] }}"
-              data-nome="{{ produto['nome'] }}"
-              data-preco="{{ produto['preco'] }}"
-              {% if produto['categoria'] == 'hamburguer' %}
-              data-preco-combo="{{ combos.get(produto['id'], produto['preco']) }}"
-              {% endif %}
+        <!-- MODAL WIZARD DO COMBO (ESTILO TOTEM) -->
+        <div class="modal-combo" id="modal-combo" hidden>
+            <div
+                class="modal-combo-conteudo"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modal-combo-titulo"
             >
-              Adicionar ao carrinho
-            </button>
+                <button
+                    type="button"
+                    class="modal-combo-fechar"
+                    id="fechar-modal-combo"
+                    aria-label="Fechar janela"
+                >
+                    &times;
+                </button>
 
-          </div>
+                <!-- Barra de Progresso -->
+                <div class="totem-progresso" aria-hidden="true">
+                    <div class="totem-passo-ind ativo" data-step="1">1. Batata</div>
+                    <div class="totem-linha"></div>
+                    <div class="totem-passo-ind" data-step="2">2. Bebida</div>
+                    <div class="totem-linha"></div>
+                    <div class="totem-passo-ind" data-step="3">3. Molho</div>
+                </div>
 
+                <h2 id="modal-combo-titulo">Monte seu combo!</h2>
+                <p id="modal-nome-produto">Personalize seu pedido</p>
+
+                <!-- Selects ocultos para sincronização -->
+                <select id="modal-batata" hidden>
+                    <option value="Batata pequena">Batata pequena</option>
+                    <option value="Batata média" selected>Batata média</option>
+                    <option value="Batata grande">Batata grande</option>
+                </select>
+
+                <select id="modal-bebida" hidden>
+                    <option value="Coca-Cola" selected>Coca-Cola</option>
+                    <option value="Coca-Cola Zero">Coca-Cola Zero</option>
+                    <option value="Fanta Laranja">Fanta Laranja</option>
+                    <option value="Fanta Guaraná">Fanta Guaraná</option>
+                    <option value="Sprite">Sprite</option>
+                    <option value="Suco de Laranja">Suco de Laranja</option>
+                    <option value="Suco de Uva">Suco de Uva</option>
+                </select>
+
+                <!-- Etapa 1: Batatas -->
+                <div class="totem-etapa ativo" id="etapa-combo-1">
+                    <h3 class="totem-subtitulo">Escolha sua McFritas:</h3>
+
+                    <div class="grid-totem-fotos grid-3" data-target="modal-batata">
+                        <button type="button" class="card-foto-totem" data-valor="Batata pequena" onclick="selecionarItemTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/batatap.png') }}" alt="Batata pequena">
+                            <strong>Batata Pequena</strong>
+                        </button>
+
+                        <button type="button" class="card-foto-totem ativo" data-valor="Batata média" onclick="selecionarItemTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/batatam.png') }}" alt="Batata média">
+                            <strong>Batata Média</strong>
+                        </button>
+
+                        <button type="button" class="card-foto-totem" data-valor="Batata grande" onclick="selecionarItemTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/batatag.png') }}" alt="Batata grande">
+                            <strong>Batata Grande</strong>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: Bebidas -->
+                <div class="totem-etapa" id="etapa-combo-2" hidden>
+                    <h3 class="totem-subtitulo">Escolha sua bebida gelada:</h3>
+
+                    <div class="grid-totem-fotos grid-4" data-target="modal-bebida">
+                        <button type="button" class="card-foto-totem ativo" data-valor="Coca-Cola" onclick="selecionarItemTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/cocacolanormal.png') }}" alt="Coca-Cola">
+                            <strong>Coca-Cola</strong>
+                        </button>
+
+                        <button type="button" class="card-foto-totem" data-valor="Coca-Cola Zero" onclick="selecionarItemTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/cocacolazero.png') }}" alt="Coca-Cola Zero">
+                            <strong>Coca Zero</strong>
+                        </button>
+
+                        <button type="button" class="card-foto-totem" data-valor="Fanta Laranja" onclick="selecionarItemTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/fantalaranja.png') }}" alt="Fanta Laranja">
+                            <strong>Fanta Laranja</strong>
+                        </button>
+
+                        <button type="button" class="card-foto-totem" data-valor="Fanta Guaraná" onclick="selecionarItemTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/fantaguarana.png') }}" alt="Fanta Guaraná">
+                            <strong>Fanta Guaraná</strong>
+                        </button>
+
+                        <button type="button" class="card-foto-totem" data-valor="Sprite" onclick="selecionarItemTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/sprite.png') }}" alt="Sprite">
+                            <strong>Sprite</strong>
+                        </button>
+
+                        <button type="button" class="card-foto-totem" data-valor="Suco de Laranja" onclick="selecionarItemTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/sucodelaranja.png') }}" alt="Suco de Laranja">
+                            <strong>Suco Laranja</strong>
+                        </button>
+
+                        <button type="button" class="card-foto-totem" data-valor="Suco de Uva" onclick="selecionarItemTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/sucodeuva.png') }}" alt="Suco de Uva">
+                            <strong>Suco Uva</strong>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: Molhos -->
+                <div class="totem-etapa" id="etapa-combo-3" hidden>
+                    <h3 class="totem-subtitulo">Escolha um molho para acompanhar:</h3>
+
+                    <div class="grid-totem-fotos grid-4">
+                        <button type="button" class="card-foto-totem ativo" data-molho="Sem molho" onclick="selecionarMolhoTotem(this)">
+                            <div class="sem-molho-icone" aria-hidden="true">🚫</div>
+                            <strong>Sem molho</strong>
+                        </button>
+
+                        <button type="button" class="card-foto-totem" data-molho="Ketchup" onclick="selecionarMolhoTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/ketchup.png') }}" alt="Ketchup">
+                            <strong>Ketchup</strong>
+                        </button>
+
+                        <button type="button" class="card-foto-totem" data-molho="Mostarda" onclick="selecionarMolhoTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/mostarda.png') }}" alt="Mostarda">
+                            <strong>Mostarda</strong>
+                        </button>
+
+                        <button type="button" class="card-foto-totem" data-molho="Barbecue" onclick="selecionarMolhoTotem(this)">
+                            <img src="{{ url_for('static', filename='imagens/barbecue.png') }}" alt="Barbecue">
+                            <strong>Barbecue</strong>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resumo e Preço -->
+                <div class="modal-combo-preco">
+                    <div class="resumo-combo-info">
+                        <span>Seu combo:</span>
+                        <strong id="resumo-totem-texto">
+                            Batata média • Coca-Cola • Sem molho
+                        </strong>
+                    </div>
+                    <strong id="modal-preco-combo">R$ 0,00</strong>
+                </div>
+
+                <!-- Navegação entre Etapas -->
+                <div class="modal-combo-botoes">
+                    <button
+                        type="button"
+                        id="cancelar-modal-combo"
+                        class="botao-cancelar-combo"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="button"
+                        id="btn-voltar-etapa"
+                        class="botao-cancelar-combo"
+                        hidden
+                        onclick="mudarEtapaTotem(-1)"
+                    >
+                        ← Voltar
+                    </button>
+
+                    <button
+                        type="button"
+                        id="btn-avancar-etapa"
+                        class="botao-confirmar-combo"
+                        onclick="mudarEtapaTotem(1)"
+                    >
+                        OK, Próximo →
+                    </button>
+
+                    <button
+                        type="button"
+                        id="confirmar-modal-combo"
+                        class="botao-confirmar-combo"
+                        hidden
+                    >
+                        Adicionar ao carrinho ✓
+                    </button>
+                </div>
+            </div>
         </div>
 
-        {% endfor %}
 
-      </div>
+        <!-- SOBRE O MEQUI -->
+        <section class="sobre" id="sobre" aria-labelledby="titulo-sobre">
+            <h2 id="titulo-sobre">Sobre o Mequi</h2>
 
-    </section>
+            <p>
+                O McDonald's é uma rede de restaurantes conhecida por seus
+                hambúrgueres, acompanhamentos, sobremesas e bebidas.
+                Nosso projeto busca apresentar esses produtos em um
+                cardápio digital simples e fácil de utilizar.
+            </p>
+
+            <h3>Por que utilizar nosso site?</h3>
+
+            <div class="diferenciais">
+                <article class="diferencial-item">
+                    <h4><span aria-hidden="true">🛒</span> Praticidade</h4>
+                    <p>Escolha seus produtos e organize tudo no carrinho.</p>
+                </article>
+
+                <article class="diferencial-item">
+                    <h4><span aria-hidden="true">🍔</span> Personalização</h4>
+                    <p>Monte combos de acordo com suas preferências.</p>
+                </article>
+
+                <article class="diferencial-item">
+                    <h4><span aria-hidden="true">📦</span> Organização</h4>
+                    <p>Acompanhe seus pedidos de maneira simples.</p>
+                </article>
+            </div>
+        </section>
+
+    </main>
 
 
-    <!-- JANELA PASSO A PASSO DE PERSONALIZAÇÃO DO COMBO (ESTILO TOTEM) -->
-    <div
-      class="modal-combo"
-      id="modal-combo"
-      hidden
-    >
+    <!-- ========================================
+         5. RODAPÉ
+    ======================================== -->
+    <footer class="rodape">
+        <div class="rodape-container">
+            <div>
+                <h3>Mequi Experience</h3>
+                <p>Seu cardápio favorito em um só lugar!</p>
+            </div>
 
-      <div class="modal-combo-conteudo" role="dialog" aria-modal="true" aria-labelledby="modal-combo-titulo">
+            <div>
+                <h3>Navegação</h3>
+                <a href="#inicio">Início</a>
+                <a href="#promocoes">Promoções</a>
+                <a href="#cardapio">Cardápio</a>
+                <a href="#sobre">Sobre nós</a>
+            </div>
 
-        <button
-          type="button"
-          class="modal-combo-fechar"
-          id="fechar-modal-combo"
-          aria-label="Fechar janela"
-        >
-          &times;
-        </button>
-
-        <!-- Barra de Progresso das Etapas -->
-        <div class="totem-progresso">
-          <div class="totem-passo-ind ativo" data-step="1">1. Batata</div>
-          <div class="totem-linha"></div>
-          <div class="totem-passo-ind" data-step="2">2. Bebida</div>
-          <div class="totem-linha"></div>
-          <div class="totem-passo-ind" data-step="3">3. Molho</div>
+            <div>
+                <h3>Atendimento</h3>
+                <p>Projeto demonstrativo de Cultura Maker.</p>
+                <p>Pedidos fictícios, sem pagamento real.</p>
+            </div>
         </div>
 
-        <h2 id="modal-combo-titulo">Monte seu combo!</h2>
-        <p id="modal-nome-produto">Personalize seu pedido</p>
+        <div class="rodape-final">
+            <p>Mequi Experience © 2026</p>
 
-        <!-- Selects ocultos para manter 100% de compatibilidade com seu script.js -->
-        <select id="modal-batata" hidden>
-          <option value="Batata pequena">Batata pequena</option>
-          <option value="Batata média" selected>Batata média</option>
-          <option value="Batata grande">Batata grande</option>
-        </select>
-
-        <select id="modal-bebida" hidden>
-          <option value="Coca-Cola" selected>Coca-Cola</option>
-          <option value="Coca-Cola Zero">Coca-Cola Zero</option>
-          <option value="Fanta Laranja">Fanta Laranja</option>
-          <option value="Fanta Guaraná">Fanta Guaraná</option>
-          <option value="Sprite">Sprite</option>
-          <option value="Suco de Laranja">Suco de Laranja</option>
-          <option value="Suco de Uva">Suco de Uva</option>
-        </select>
-
-
-        <!-- ================= ETAPA 1: BATATAS ================= -->
-        <div class="totem-etapa ativo" id="etapa-combo-1">
-          <h3 class="totem-subtitulo">Escolha sua McFritas:</h3>
-
-          <div class="grid-totem-fotos grid-3">
-            <button type="button" class="card-foto-totem" data-target="modal-batata" data-valor="Batata pequena" onclick="selecionarItemTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/batatap.png') }}" alt="Batata pequena">
-              <strong>Batata Pequena</strong>
-            </button>
-
-            <button type="button" class="card-foto-totem ativo" data-target="modal-batata" data-valor="Batata média" onclick="selecionarItemTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/batatam.png') }}" alt="Batata média">
-              <strong>Batata Média</strong>
-            </button>
-
-            <button type="button" class="card-foto-totem" data-target="modal-batata" data-valor="Batata grande" onclick="selecionarItemTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/batatag.png') }}" alt="Batata grande">
-              <strong>Batata Grande</strong>
-            </button>
-          </div>
+            <a href="{{ url_for('login') }}" class="acesso-funcionario">
+                Área dos funcionários
+            </a>
         </div>
-
-
-        <!-- ================= ETAPA 2: BEBIDAS ================= -->
-        <div class="totem-etapa" id="etapa-combo-2" hidden>
-          <h3 class="totem-subtitulo">Escolha sua bebida gelada:</h3>
-
-          <div class="grid-totem-fotos grid-4">
-            <button type="button" class="card-foto-totem ativo" data-target="modal-bebida" data-valor="Coca-Cola" onclick="selecionarItemTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/cocacolanormal.png') }}" alt="Coca-Cola">
-              <strong>Coca-Cola</strong>
-            </button>
-
-            <button type="button" class="card-foto-totem" data-target="modal-bebida" data-valor="Coca-Cola Zero" onclick="selecionarItemTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/cocacolazero.png') }}" alt="Coca-Cola Zero">
-              <strong>Coca Zero</strong>
-            </button>
-
-            <button type="button" class="card-foto-totem" data-target="modal-bebida" data-valor="Fanta Laranja" onclick="selecionarItemTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/fantalaranja.png') }}" alt="Fanta Laranja">
-              <strong>Fanta Laranja</strong>
-            </button>
-
-            <button type="button" class="card-foto-totem" data-target="modal-bebida" data-valor="Fanta Guaraná" onclick="selecionarItemTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/fantaguarana.png') }}" alt="Fanta Guaraná">
-              <strong>Fanta Guaraná</strong>
-            </button>
-
-            <button type="button" class="card-foto-totem" data-target="modal-bebida" data-valor="Sprite" onclick="selecionarItemTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/sprite.png') }}" alt="Sprite">
-              <strong>Sprite</strong>
-            </button>
-
-            <button type="button" class="card-foto-totem" data-target="modal-bebida" data-valor="Suco de Laranja" onclick="selecionarItemTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/sucodelaranja.png') }}" alt="Suco de Laranja">
-              <strong>Suco Laranja</strong>
-            </button>
-
-            <button type="button" class="card-foto-totem" data-target="modal-bebida" data-valor="Suco de Uva" onclick="selecionarItemTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/sucodeuva.png') }}" alt="Suco de Uva">
-              <strong>Suco Uva</strong>
-            </button>
-          </div>
-        </div>
-
-
-        <!-- ================= ETAPA 3: MOLHOS ================= -->
-        <div class="totem-etapa" id="etapa-combo-3" hidden>
-          <h3 class="totem-subtitulo">Escolha um molho para acompanhar:</h3>
-
-          <div class="grid-totem-fotos grid-4">
-            <button type="button" class="card-foto-totem ativo" data-molho="Sem molho" onclick="selecionarMolhoTotem(this)">
-              <div class="sem-molho-icone">🚫</div>
-              <strong>Sem molho</strong>
-            </button>
-
-            <button type="button" class="card-foto-totem" data-molho="Ketchup" onclick="selecionarMolhoTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/ketchup.png') }}" alt="Ketchup">
-              <strong>Ketchup</strong>
-            </button>
-
-            <button type="button" class="card-foto-totem" data-molho="Mostarda" onclick="selecionarMolhoTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/mostarda.png') }}" alt="Mostarda">
-              <strong>Mostarda</strong>
-            </button>
-
-            <button type="button" class="card-foto-totem" data-molho="Barbecue" onclick="selecionarMolhoTotem(this)">
-              <img src="{{ url_for('static', filename='imagens/barbecue.png') }}" alt="Barbecue">
-              <strong>Barbecue</strong>
-            </button>
-          </div>
-        </div>
-
-
-        <!-- RESUMO E PREÇO -->
-        <div class="modal-combo-preco">
-          <div style="text-align: left;">
-            <span style="font-size: 14px; color: var(--cinza);">Seu combo:</span>
-            <strong id="resumo-totem-texto" style="display: block; font-size: 15px; color: var(--preto); font-family: 'Nunito', sans-serif;">
-              Batata média • Coca-Cola • Sem molho
-            </strong>
-          </div>
-          <strong id="modal-preco-combo">R$ 0,00</strong>
-        </div>
-
-
-        <!-- BOTÕES DE NAVEGAÇÃO ENTRE ETAPAS -->
-        <div class="modal-combo-botoes">
-          <button
-            type="button"
-            id="cancelar-modal-combo"
-            class="botao-cancelar-combo"
-          >
-            Cancelar
-          </button>
-
-          <button
-            type="button"
-            id="btn-voltar-etapa"
-            class="botao-cancelar-combo"
-            hidden
-            onclick="mudarEtapaTotem(-1)"
-          >
-            ← Voltar
-          </button>
-
-          <button
-            type="button"
-            id="btn-avancar-etapa"
-            class="botao-confirmar-combo"
-            onclick="mudarEtapaTotem(1)"
-          >
-            OK, Próximo →
-          </button>
-
-          <button
-            type="button"
-            id="confirmar-modal-combo"
-            class="botao-confirmar-combo"
-            hidden
-          >
-            Adicionar ao carrinho ✓
-          </button>
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- SOBRE O MEQUI -->
-    <section class="sobre" id="sobre">
-
-      <h2>Sobre o Mequi</h2>
-
-      <p>
-        O McDonald's é uma rede de restaurantes conhecida por seus
-        hambúrgueres, acompanhamentos, sobremesas e bebidas.
-        Nosso projeto busca apresentar esses produtos em um
-        cardápio digital simples e fácil de utilizar.
-      </p>
-
-      <h3>Por que utilizar nosso site?</h3>
-
-      <div class="diferenciais">
-
-        <div class="diferencial-item">
-          <h4>🛒 Praticidade</h4>
-          <p>Escolha seus produtos e organize tudo no carrinho.</p>
-        </div>
-
-        <div class="diferencial-item">
-          <h4>🍔 Personalização</h4>
-          <p>Monte combos de acordo com suas preferências.</p>
-        </div>
-
-        <div class="diferencial-item">
-          <h4>📦 Organização</h4>
-          <p>Acompanhe seus pedidos de maneira simples.</p>
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- RODAPÉ -->
-  <footer class="rodape">
-
-    <div class="rodape-container">
-
-      <div>
-        <h3>Mequi Experience</h3>
-        <p>Seu cardápio favorito em um só lugar!</p>
-      </div>
-
-      <div>
-        <h3>Navegação</h3>
-        <a href="#inicio">Início</a>
-        <a href="#promocoes">Promoções</a>
-        <a href="#cardapio">Cardápio</a>
-        <a href="#sobre">Sobre nós</a>
-      </div>
-
-      <div>
-        <h3>Atendimento</h3>
-        <p>Projeto demonstrativo de Cultura Maker.</p>
-        <p>Pedidos fictícios, sem pagamento real.</p>
-      </div>
-
-    </div>
-
-    <div class="rodape-final">
-      <p>Mequi Experience © 2026</p>
-
-      <a href="{{ url_for('login') }}" class="acesso-funcionario">
-        Área dos funcionários
-      </a>
-    </div>
-
-  </footer>
-
-
-  <!-- JAVASCRIPT -->
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
-
-  <!-- CONTROLE VISUAL DO TOTEM PASSO A PASSO -->
-  <script>
-    let etapaAtualTotem = 1;
-    let batataEscolhidaTotem = "Batata média";
-    let bebidaEscolhidaTotem = "Coca-Cola";
-    let molhoEscolhidoTotem = "Sem molho";
-
-    function selecionarOpcaoVisual(botao) {
-      const container = botao.closest('.opcoes-pedido');
-      const select = container.querySelector('select.tipo-pedido');
-      container.querySelectorAll('.opcao-btn').forEach(b => b.classList.remove('ativo'));
-      botao.classList.add('ativo');
-      select.value = botao.dataset.valor;
-      select.dispatchEvent(new Event('change'));
-    }
-
-    function atualizarResumoTotem() {
-      const resumo = document.getElementById('resumo-totem-texto');
-      if (resumo) {
-        resumo.textContent = `${batataEscolhidaTotem} • ${bebidaEscolhidaTotem} • ${molhoEscolhidoTotem}`;
-      }
-    }
-
-    function selecionarItemTotem(botao) {
-      const grid = botao.parentElement;
-      grid.querySelectorAll('.card-foto-totem').forEach(b => b.classList.remove('ativo'));
-      botao.classList.add('ativo');
-
-      const valor = botao.dataset.valor;
-      const targetId = grid.dataset.target || botao.dataset.target;
-
-      // Atualiza a variável direta para o resumo nunca falhar
-      if (targetId === 'modal-batata') {
-        batataEscolhidaTotem = valor;
-      } else if (targetId === 'modal-bebida') {
-        bebidaEscolhidaTotem = valor;
-      }
-
-      // Sincroniza com o <select> oculto para o seu script.js ler no carrinho
-      const select = document.getElementById(targetId);
-      if (select) {
-        select.value = valor;
-        select.dispatchEvent(new Event('change'));
-      }
-
-      atualizarResumoTotem();
-    }
-
-    function selecionarMolhoTotem(botao) {
-      const grid = botao.parentElement;
-      grid.querySelectorAll('.card-foto-totem').forEach(b => b.classList.remove('ativo'));
-      botao.classList.add('ativo');
-      molhoEscolhidoTotem = botao.dataset.molho;
-      atualizarResumoTotem();
-    }
-
-    function irParaEtapaTotem(numero) {
-      etapaAtualTotem = numero;
-
-      document.querySelectorAll('.totem-etapa').forEach((el, idx) => {
-        el.hidden = (idx + 1) !== etapaAtualTotem;
-      });
-
-      document.querySelectorAll('.totem-passo-ind').forEach((ind, idx) => {
-        ind.classList.toggle('ativo', (idx + 1) <= etapaAtualTotem);
-      });
-
-      document.getElementById('cancelar-modal-combo').hidden = (etapaAtualTotem !== 1);
-      document.getElementById('btn-voltar-etapa').hidden = (etapaAtualTotem === 1);
-      document.getElementById('btn-avancar-etapa').hidden = (etapaAtualTotem === 3);
-      document.getElementById('confirmar-modal-combo').hidden = (etapaAtualTotem !== 3);
-    }
-
-    function mudarEtapaTotem(direcao) {
-      const proxima = etapaAtualTotem + direcao;
-      if (proxima >= 1 && proxima <= 3) {
-        irParaEtapaTotem(proxima);
-      }
-    }
-
-    // Reseta o modal para a Etapa 1 e sincroniza os botões toda vez que abrir
-    const modalComboEl = document.getElementById('modal-combo');
-    const observadorModal = new MutationObserver(() => {
-      if (!modalComboEl.hidden) {
-        irParaEtapaTotem(1);
-
-        // Garante que os selects ocultos recebam os valores dos botões ativos
-        const selectBatata = document.getElementById('modal-batata');
-        const selectBebida = document.getElementById('modal-bebida');
-        if (selectBatata) selectBatata.value = batataEscolhidaTotem;
-        if (selectBebida) selectBebida.value = bebidaEscolhidaTotem;
-
-        atualizarResumoTotem();
-      }
-    });
-    observadorModal.observe(modalComboEl, { attributes: true, attributeFilter: ['hidden'] });
-  </script>
+    </footer>
 
 </body>
 </html>
