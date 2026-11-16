@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Pedido confirmado - Mequi Experience</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,27 +16,31 @@
 <body>
 
     <header class="cabecalho">
-        <div class="logo-container">
+        <a href="{{ url_for('inicio') }}" class="logo-container">
             <img
                 src="https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG17.png"
                 class="logo"
                 alt="Logo do Mequi"
             >
             <h1>Mequi Experience</h1>
-        </div>
+        </a>
 
-        <a href="{{ url_for('inicio') }}" class="botao-voltar">
+        <a
+            href="{{ url_for('inicio') }}"
+            class="botao-voltar"
+            style="grid-column: 3; justify-self: end;"
+        >
             Voltar ao cardápio
         </a>
     </header>
 
     <main class="pagina-confirmacao">
 
-        <section class="cartao-confirmacao">
+        <section class="cartao-confirmacao" aria-labelledby="titulo-confirmacao">
 
-            <div class="icone-confirmacao">✓</div>
+            <div class="icone-confirmacao" aria-hidden="true">✓</div>
 
-            <h2>Pedido realizado com sucesso!</h2>
+            <h2 id="titulo-confirmacao">Pedido realizado com sucesso!</h2>
 
             <p class="mensagem-confirmacao">
                 Obrigado por escolher o Mequi Experience!
@@ -50,37 +53,42 @@
             <h3>Resumo do pedido</h3>
 
             <div class="itens-confirmacao">
-
                 {% for item in itens %}
-
                     <div class="item-confirmacao">
-
                         <div>
-                            <strong>{{ item['nome'] }}</strong>
+                            <strong>
+                                {% if item['tipo'] == 'combo' %}
+                                    Combo {{ item['nome'] }}
+                                {% else %}
+                                    {{ item['nome'] }}
+                                {% endif %}
+                            </strong>
+
+                            {% if item['descricao'] %}
+                                <p>{{ item['descricao'] }}</p>
+                            {% endif %}
+
                             <p>Quantidade: {{ item['quantidade'] }}</p>
                         </div>
 
                         <strong>
-                            R$ {{ "%.2f"|format(item['preco'] * item['quantidade']) }}
+                            R$ {{ "%.2f" | format(item['preco'] * item['quantidade']) }}
                         </strong>
-
                     </div>
-
                 {% endfor %}
-
             </div>
 
             <div class="total-confirmacao">
                 <span>Total do pedido</span>
-
-                <strong>
-                    R$ {{ "%.2f"|format(pedido['total']) }}
-                </strong>
+                <strong>R$ {{ "%.2f" | format(pedido['total']) }}</strong>
             </div>
 
-            <div class="status-confirmacao">
-                Status: {{ pedido['status'] }}
-            </div>
+            <p class="status-confirmacao">
+                Status: <strong>{{ pedido['status'] }}</strong>
+                {% if pedido['data'] %}
+                    • {{ pedido['data'] }}
+                {% endif %}
+            </p>
 
             <a href="{{ url_for('inicio') }}" class="botao-voltar-cardapio">
                 Voltar ao cardápio
