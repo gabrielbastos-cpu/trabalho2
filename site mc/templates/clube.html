@@ -2,141 +2,184 @@
 <html lang="pt-BR">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clube Méqui - Mequi Experience</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clube Méqui - Mequi Experience</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 
 <body>
 
-  <!-- CABEÇALHO -->
-  <header class="cabecalho">
-    <a href="{{ url_for('inicio') }}" class="logo-container">
-      <img src="https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG17.png" class="logo" alt="Logo do McDonald's">
-      <h1>Clube Méqui</h1>
-    </a>
-
-    <nav class="navegacao">
-      <a href="{{ url_for('inicio') }}">Voltar ao Cardápio</a>
-    </nav>
-
-    <a href="{{ url_for('carrinho') }}" class="botao-carrinho">
-      <img src="{{ url_for('static', filename='imagens/carrinho.png') }}" alt="">
-      <span>Carrinho</span>
-    </a>
-  </header>
-
-  <main class="pagina-clube">
-
-    {% if cliente %}
-    <!-- ================= PAINEL DO CLIENTE LOGADO ================= -->
-    <div class="cartao-clube-topo">
-      <div>
-        <span class="selo-membro">MEMBRO MEU MÉQUI</span>
-        <h2>Olá, {{ cliente['nome'] }}!</h2>
-        <p>A cada <strong>R$ 1,00</strong> em pedidos você ganha <strong>10 pontos</strong> para trocar por produtos grátis.</p>
-      </div>
-
-      <div class="caixa-pontos">
-        <span>Seu saldo atual</span>
-        <strong>{{ cliente['pontos'] }} pts</strong>
-        <a href="{{ url_for('clube_sair') }}" class="link-sair-clube">Sair da conta</a>
-      </div>
-    </div>
-
-    <section class="vitrine-recompensas">
-      <h3>Troque seus pontos por prêmios</h3>
-      <p>Clique em resgatar para enviar o item grátis direto para o seu carrinho.</p>
-
-      <div class="cardapio-container">
-        {% for item in recompensas %}
-        <div class="cardapio-item">
-          <img src="{{ url_for('static', filename='imagens/' + item['imagem']) }}" alt="{{ item['nome'] }}">
-
-          <div class="descricao">
-            <h3>{{ item['nome'] }}</h3>
-            <p style="color: var(--preto); font-size: 18px;">{{ item['pontos'] }} pontos</p>
-            <span style="font-size: 13px; color: var(--texto-secundario); margin-bottom: 16px;">
-              {{ item['descricao'] }}
-            </span>
-
-            {% if cliente['pontos'] >= item['pontos'] %}
-            <button
-              type="button"
-              class="botao-adicionar botao-resgatar-clube"
-              data-id="{{ item['id'] }}"
-              data-nome="{{ item['nome'] }}"
-              data-pontos="{{ item['pontos'] }}"
-              onclick="resgatarPremioClube(this)"
+    <header class="cabecalho">
+        <a href="{{ url_for('inicio') }}" class="logo-container">
+            <img
+                src="https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG17.png"
+                class="logo"
+                alt="Logo do Mequi"
             >
-              Resgatar Grátis
-            </button>
-            {% else %}
-            <button type="button" class="botao-adicionar" disabled style="opacity: 0.45; cursor: not-allowed;">
-              Faltam {{ item['pontos'] - cliente['pontos'] }} pts
-            </button>
-            {% endif %}
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </section>
+            <h1>Clube Méqui</h1>
+        </a>
 
-    {% else %}
-    <!-- ================= TELA DE ENTRAR OU CADASTRAR ================= -->
-    <div class="clube-auth-container">
-      <div class="clube-auth-header">
-        <span class="selo-membro">GANHE 150 PONTOS NO CADASTRO</span>
-        <h2>Bem-vindo ao Clube Méqui</h2>
-        <p>Acumule pontos em todos os seus pedidos e troque por lanches, batatas e sobremesas!</p>
-      </div>
+        <nav class="navegacao" aria-label="Navegação principal">
+            <a href="{{ url_for('inicio') }}">Voltar ao Cardápio</a>
+        </nav>
 
-      {% if erro %}
-      <p class="erro-login">{{ erro }}</p>
-      {% endif %}
+        <a href="{{ url_for('carrinho') }}" class="botao-carrinho">
+            <img src="{{ url_for('static', filename='imagens/carrinho.png') }}" alt="" aria-hidden="true">
+            <span>Carrinho</span>
+        </a>
+    </header>
 
-      <div class="clube-forms-grid">
-        <!-- Formulário de Login -->
-        <div class="clube-box">
-          <h3>Já tenho conta</h3>
-          <form action="{{ url_for('clube_entrar') }}" method="POST">
-            <label for="login-email">E-mail</label>
-            <input id="login-email" type="email" name="email" placeholder="seuemail@exemplo.com" required>
+    <main class="pagina-clube">
 
-            <label for="login-senha">Senha</label>
-            <input id="login-senha" type="password" name="senha" placeholder="Sua senha" required>
+        {% if cliente %}
+            <!-- ================= PAINEL DO CLIENTE LOGADO ================= -->
+            <section class="cartao-clube-topo" aria-label="Resumo da conta">
+                <div>
+                    <span class="selo-membro">MEMBRO MEU MÉQUI</span>
+                    <h2>Olá, {{ cliente['nome'] }}!</h2>
+                    <p>
+                        A cada <strong>R$ 1,00</strong> em pedidos você ganha
+                        <strong>10 pontos</strong> para trocar por produtos grátis.
+                    </p>
+                </div>
 
-            <button type="submit">Entrar no Clube</button>
-          </form>
-        </div>
+                <div class="caixa-pontos">
+                    <span>Seu saldo atual</span>
+                    <strong>{{ cliente['pontos'] }} pts</strong>
+                    <a href="{{ url_for('clube_sair') }}" class="link-sair-clube">Sair da conta</a>
+                </div>
+            </section>
 
-        <!-- Formulário de Cadastro -->
-        <div class="clube-box destaque-cadastro">
-          <h3>Quero participar (+150 pts)</h3>
-          <form action="{{ url_for('clube_cadastrar') }}" method="POST">
-            <label for="cad-nome">Seu nome</label>
-            <input id="cad-nome" type="text" name="nome" placeholder="Como quer ser chamado?" required>
+            <section class="vitrine-recompensas" aria-labelledby="titulo-recompensas">
+                <h3 id="titulo-recompensas">Troque seus pontos por prêmios</h3>
+                <p>Clique em resgatar para enviar o item grátis direto para o seu carrinho.</p>
 
-            <label for="cad-email">E-mail</label>
-            <input id="cad-email" type="email" name="email" placeholder="seuemail@exemplo.com" required>
+                <div class="cardapio-container">
+                    {% for item in recompensas %}
+                        <article class="cardapio-item">
+                            <img
+                                src="{{ url_for('static', filename='imagens/' + item['imagem']) }}"
+                                alt="{{ item['nome'] }}"
+                                loading="lazy"
+                            >
 
-            <label for="cad-senha">Crie uma senha</label>
-            <input id="cad-senha" type="password" name="senha" placeholder="Mínimo 4 caracteres" required>
+                            <div class="descricao">
+                                <h3>{{ item['nome'] }}</h3>
+                                <p class="pontos-recompensa">{{ item['pontos'] }} pontos</p>
+                                <span class="descricao-recompensa">{{ item['descricao'] }}</span>
 
-            <button type="submit">Criar conta e ganhar pontos</button>
-          </form>
-        </div>
-      </div>
-    </div>
-    {% endif %}
+                                {% if cliente['pontos'] >= item['pontos'] %}
+                                    <button
+                                        type="button"
+                                        class="botao-adicionar botao-resgatar-clube"
+                                        data-id="{{ item['id'] }}"
+                                        data-nome="{{ item['nome'] }}"
+                                        data-pontos="{{ item['pontos'] }}"
+                                        onclick="resgatarPremioClube(this)"
+                                    >
+                                        Resgatar Grátis
+                                    </button>
+                                {% else %}
+                                    <button type="button" class="botao-adicionar" disabled>
+                                        Faltam {{ item['pontos'] - cliente['pontos'] }} pts
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
 
-  </main>
+        {% else %}
+            <!-- ================= TELA DE ENTRAR OU CADASTRAR ================= -->
+            <section class="clube-auth-container" aria-labelledby="titulo-clube-auth">
+                <div class="clube-auth-header">
+                    <span class="selo-membro">GANHE 150 PONTOS NO CADASTRO</span>
+                    <h2 id="titulo-clube-auth">Bem-vindo ao Clube Méqui</h2>
+                    <p>Acumule pontos em todos os seus pedidos e troque por lanches, batatas e sobremesas!</p>
+                </div>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+                {% if erro %}
+                    <p class="erro-login" role="alert">{{ erro }}</p>
+                {% endif %}
+
+                <div class="clube-forms-grid">
+                    <div class="clube-box">
+                        <h3>Já tenho conta</h3>
+                        <form action="{{ url_for('clube_entrar') }}" method="POST">
+                            <label for="login-email">E-mail</label>
+                            <input
+                                id="login-email"
+                                type="email"
+                                name="email"
+                                autocomplete="email"
+                                placeholder="seuemail@exemplo.com"
+                                required
+                            >
+
+                            <label for="login-senha">Senha</label>
+                            <input
+                                id="login-senha"
+                                type="password"
+                                name="senha"
+                                autocomplete="current-password"
+                                placeholder="Sua senha"
+                                required
+                            >
+
+                            <button type="submit">Entrar no Clube</button>
+                        </form>
+                    </div>
+
+                    <div class="clube-box destaque-cadastro">
+                        <h3>Quero participar (+150 pts)</h3>
+                        <form action="{{ url_for('clube_cadastrar') }}" method="POST">
+                            <label for="cad-nome">Seu nome</label>
+                            <input
+                                id="cad-nome"
+                                type="text"
+                                name="nome"
+                                autocomplete="name"
+                                placeholder="Como quer ser chamado?"
+                                required
+                            >
+
+                            <label for="cad-email">E-mail</label>
+                            <input
+                                id="cad-email"
+                                type="email"
+                                name="email"
+                                autocomplete="email"
+                                placeholder="seuemail@exemplo.com"
+                                required
+                            >
+
+                            <label for="cad-senha">Crie uma senha</label>
+                            <input
+                                id="cad-senha"
+                                type="password"
+                                name="senha"
+                                autocomplete="new-password"
+                                minlength="4"
+                                placeholder="Mínimo 4 caracteres"
+                                required
+                            >
+
+                            <button type="submit">Criar conta e ganhar pontos</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+
+    </main>
+
 </body>
 </html>
