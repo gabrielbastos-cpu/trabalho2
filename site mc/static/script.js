@@ -1,15 +1,15 @@
 /* ========================================
-   1. CONFIGURAÇÕES DO CARRINHO E TOTEM
+   1. CONSTANTES E CONFIGURAÇÕES
 ======================================== */
 
-let carrinho = carregarCarrinho();
-let finalizandoPedido = false;
-let comboSelecionado = null;
+const STORAGE_KEY = "carrinho";
+const TIPOS_VALIDOS = new Set(["individual", "combo", "resgate"]);
 
-let etapaAtualTotem = 1;
-let batataEscolhidaTotem = "Batata média";
-let bebidaEscolhidaTotem = "Coca-Cola";
-let molhoEscolhidoTotem = "Sem molho";
+const DEFAULTS_TOTEM = {
+    batata: "Batata média",
+    bebida: "Coca-Cola",
+    molho: "Sem molho"
+};
 
 const PRECO_BATATAS = {
     "Batata pequena": 10,
@@ -23,9 +23,9 @@ const PRECO_BEBIDAS = {
     "Fanta Laranja": 8,
     "Fanta Guaraná": 8,
     "Sprite": 8,
+    "Fanta": 8,
     "Suco de Laranja": 10,
     "Suco de Uva": 10,
-    "Fanta": 8,
     "Água": 5
 };
 
@@ -36,10 +36,43 @@ const PRECO_MOLHOS = {
     "Barbecue": 0
 };
 
+const FORMATADOR_MOEDA = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+});
+
 
 /* ========================================
-   2. IDENTIFICAR CADA ITEM
+   2. ESTADO DA APLICAÇÃO
 ======================================== */
+
+let carrinho = carregarCarrinho();
+let finalizandoPedido = false;
+let timerToastCarrinho = null;
+
+const totem = {
+    combo: null,
+    etapa: 1,
+    batata: DEFAULTS_TOTEM.batata,
+    bebida: DEFAULTS_TOTEM.bebida,
+    molho: DEFAULTS_TOTEM.molho
+};
+
+
+/* ========================================
+   3. UTILITÁRIOS E PERSISTÊNCIA
+======================================== */
+
+function formatarDinheiro(valor) {
+    return FORMATADOR_MOEDA.format(valor);
+}
+
+function criarElemento(tag, classe = "", texto = "") {
+    const el = document.createElement(tag);
+    if (classe) el.className = classe;
+    if (texto) el.textContent = texto;
+    return el;
+}
 
 function criarChave(produto) {
     return [
@@ -51,15 +84,9 @@ function criarChave(produto) {
     ].join("-");
 }
 
-
-/* ========================================
-   3. CARREGAR E SALVAR CARRINHO
-======================================== */
-
 function carregarCarrinho() {
     try {
-        const dados = JSON.parse(localStorage.getItem("carrinho")) || [];
-
+        const dados = JSON.parse(localStorage.getItem(STORAGE_KEY));
         if (!Array.isArray(dados)) return [];
 
         return dados
@@ -72,9 +99,13 @@ function carregarCarrinho() {
                 produto.quantidade > 0
             )
             .map(produto => {
+                const tipo = TIPOS_VALIDOS.has(produto.tipo)
+                    ? produto.tipo
+                    : "individual";
+
                 const item = {
                     ...produto,
-                    tipo: produto.tipo === "combo" ? "combo" : "individual",
+                    tipo,
                     batata: produto.batata || "",
                     bebida: produto.bebida || "",
                     molho: produto.molho || ""
@@ -83,7 +114,6 @@ function carregarCarrinho() {
                 item.chave = criarChave(item);
                 return item;
             });
-
     } catch (erro) {
         console.error("Erro ao carregar carrinho:", erro);
         return [];
@@ -91,113 +121,125 @@ function carregarCarrinho() {
 }
 
 function salvarCarrinho() {
-    localStorage.setItem("carrinho", JSON.stringify(carrinho));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(carrinho));
 }
 
 
 /* ========================================
-   4. FUNÇÕES VISUAIS DO TOTEM (HTML ONCLICK)
+   4. CONTROLES VISUAIS DO CARD E TOTEM
 ======================================== */
+
+function marcarBotaoAtivo(container, seletorBotoes, condicao) {
+    if (!container) return;
+    container.querySelectorAll(seletorBotoes).forEach(btn => {
+        btn.classList.toggle("ativo", condicao(btn));
+    });
+}
 
 function selecionarOpcaoVisual(botao) {
     const container = botao.closest(".opcoes-pedido");
+    if (!container) return;
+
     const select = container.querySelector("select.tipo-pedido");
-    container.querySelectorAll(".opcao-btn").forEach(b => b.classList.remove("ativo"));
-    botao.classList.add("ativo");
-    select.value = botao.dataset.valor;
-    select.dispatchEvent(new Event("change"));
+    marcarBotaoAtivo(container, ".opcao-btn", b => b === botao);
+
+    if (select) {
+        select.value = botao.dataset.valor;
+        select.dispatchEvent(new Event("change"));
+    }
 }
 
 function atualizarResumoTotem() {
     const resumo = document.getElementById("resumo-totem-texto");
     if (resumo) {
-        resumo.textContent = `${batataEscolhidaTotem} • ${bebidaEscolhidaTotem} • ${molhoEscolhidoTotem}`;
+        resumo.textContent = `${totem.batata} • ${totem.bebida} • ${totem.molho}`;
     }
 }
 
 function selecionarItemTotem(botao) {
     const grid = botao.parentElement;
-    grid.querySelectorAll(".card-foto-totem").forEach(b => b.classList.remove("ativo"));
-    botao.classList.add("ativo");
+    marcarBotaoAtivo(grid, ".card-foto-totem", b => b === botao);
 
     const valor = botao.dataset.valor;
     const targetId = grid.dataset.target || botao.dataset.target;
 
     if (targetId === "modal-batata") {
-        batataEscolhidaTotem = valor;
+        totem.batata = valor;
     } else if (targetId === "modal-bebida") {
-        bebidaEscolhidaTotem = valor;
+        totem.bebida = valor;
     }
 
     const select = document.getElementById(targetId);
-    if (select) {
-        select.value = valor;
-    }
+    if (select) select.value = valor;
 
     atualizarResumoTotem();
     atualizarPrecoModal();
 }
 
 function selecionarMolhoTotem(botao) {
-    const grid = botao.parentElement;
-    grid.querySelectorAll(".card-foto-totem").forEach(b => b.classList.remove("ativo"));
-    botao.classList.add("ativo");
+    marcarBotaoAtivo(botao.parentElement, ".card-foto-totem", b => b === botao);
+    totem.molho = botao.dataset.molho;
 
-    molhoEscolhidoTotem = botao.dataset.molho;
     atualizarResumoTotem();
     atualizarPrecoModal();
 }
 
 function irParaEtapaTotem(numero) {
-    etapaAtualTotem = numero;
+    totem.etapa = numero;
 
     document.querySelectorAll(".totem-etapa").forEach((el, idx) => {
-        el.hidden = (idx + 1) !== etapaAtualTotem;
+        el.hidden = (idx + 1) !== totem.etapa;
     });
 
     document.querySelectorAll(".totem-passo-ind").forEach((ind, idx) => {
-        ind.classList.toggle("ativo", (idx + 1) <= etapaAtualTotem);
+        ind.classList.toggle("ativo", (idx + 1) <= totem.etapa);
     });
 
-    const btnCancelar = document.getElementById("cancelar-modal-combo");
-    const btnVoltar = document.getElementById("btn-voltar-etapa");
-    const btnAvancar = document.getElementById("btn-avancar-etapa");
-    const btnConfirmar = document.getElementById("confirmar-modal-combo");
+    const botoes = {
+        "cancelar-modal-combo": totem.etapa !== 1,
+        "btn-voltar-etapa": totem.etapa === 1,
+        "btn-avancar-etapa": totem.etapa === 3,
+        "confirmar-modal-combo": totem.etapa !== 3
+    };
 
-    if (btnCancelar) btnCancelar.hidden = (etapaAtualTotem !== 1);
-    if (btnVoltar) btnVoltar.hidden = (etapaAtualTotem === 1);
-    if (btnAvancar) btnAvancar.hidden = (etapaAtualTotem === 3);
-    if (btnConfirmar) btnConfirmar.hidden = (etapaAtualTotem !== 3);
+    Object.entries(botoes).forEach(([id, esconder]) => {
+        const el = document.getElementById(id);
+        if (el) el.hidden = esconder;
+    });
 }
 
 function mudarEtapaTotem(direcao) {
-    const proxima = etapaAtualTotem + direcao;
+    const proxima = totem.etapa + direcao;
     if (proxima >= 1 && proxima <= 3) {
         irParaEtapaTotem(proxima);
     }
 }
 
 function resetarSelecoesVisuaisModal() {
-    batataEscolhidaTotem = "Batata média";
-    bebidaEscolhidaTotem = "Coca-Cola";
-    molhoEscolhidoTotem = "Sem molho";
+    totem.batata = DEFAULTS_TOTEM.batata;
+    totem.bebida = DEFAULTS_TOTEM.bebida;
+    totem.molho = DEFAULTS_TOTEM.molho;
 
     const selectBatata = document.getElementById("modal-batata");
     const selectBebida = document.getElementById("modal-bebida");
-    if (selectBatata) selectBatata.value = "Batata média";
-    if (selectBebida) selectBebida.value = "Coca-Cola";
+    if (selectBatata) selectBatata.value = totem.batata;
+    if (selectBebida) selectBebida.value = totem.bebida;
 
-    document.querySelectorAll("#etapa-combo-1 .card-foto-totem").forEach(b => {
-        b.classList.toggle("ativo", b.dataset.valor === "Batata média");
-    });
-
-    document.querySelectorAll("#etapa-combo-2 .card-foto-totem").forEach(b => {
-        b.classList.toggle("ativo", b.dataset.valor === "Coca-Cola");
-    });
-
-    document.querySelectorAll("#etapa-combo-3 .card-foto-totem").forEach(b => {
-        b.classList.toggle("ativo", b.dataset.molho === "Sem molho");
-    });
+    marcarBotaoAtivo(
+        document.getElementById("etapa-combo-1"),
+        ".card-foto-totem",
+        b => b.dataset.valor === totem.batata
+    );
+    marcarBotaoAtivo(
+        document.getElementById("etapa-combo-2"),
+        ".card-foto-totem",
+        b => b.dataset.valor === totem.bebida
+    );
+    marcarBotaoAtivo(
+        document.getElementById("etapa-combo-3"),
+        ".card-foto-totem",
+        b => b.dataset.molho === totem.molho
+    );
 
     irParaEtapaTotem(1);
     atualizarResumoTotem();
@@ -205,120 +247,26 @@ function resetarSelecoesVisuaisModal() {
 
 
 /* ========================================
-   5. CONFIGURAR EVENTOS
-======================================== */
-
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    // Seletores individual / combo
-    document.querySelectorAll(".tipo-pedido").forEach(seletor => {
-        seletor.addEventListener("change", function () {
-            if (this.value === "combo") {
-                abrirModalCombo(this);
-            }
-        });
-    });
-
-    // Botões de adicionar produto
-    document.querySelectorAll(".botao-adicionar").forEach(botao => {
-        botao.addEventListener("click", function () {
-            const cartao = this.closest(".cardapio-item");
-            const seletor = cartao.querySelector(".tipo-pedido");
-
-            // Evita adicionar combo sem passar pela personalização
-            if (seletor && seletor.value === "combo") {
-                abrirModalCombo(seletor);
-                return;
-            }
-
-            const produto = {
-                id: Number(this.dataset.id),
-                nome: this.dataset.nome,
-                preco: Number(this.dataset.preco),
-                tipo: "individual",
-                batata: "",
-                bebida: "",
-                molho: ""
-            };
-
-            adicionarCarrinho(produto, this);
-        });
-    });
-
-    // Eventos da janela modal
-    const batataModal = document.getElementById("modal-batata");
-    const bebidaModal = document.getElementById("modal-bebida");
-
-    if (batataModal) {
-        batataModal.addEventListener("change", atualizarPrecoModal);
-    }
-
-    if (bebidaModal) {
-        bebidaModal.addEventListener("change", atualizarPrecoModal);
-    }
-
-    document.getElementById("confirmar-modal-combo")
-        ?.addEventListener("click", confirmarCombo);
-
-    document.getElementById("cancelar-modal-combo")
-        ?.addEventListener("click", fecharModalCombo);
-
-    document.getElementById("fechar-modal-combo")
-        ?.addEventListener("click", fecharModalCombo);
-
-    const modal = document.getElementById("modal-combo");
-
-    if (modal) {
-        modal.addEventListener("click", function (evento) {
-            if (evento.target === modal) {
-                fecharModalCombo();
-            }
-        });
-    }
-
-    // Tecla ESC fecha a janela
-    document.addEventListener("keydown", function (evento) {
-        if (evento.key === "Escape") {
-            fecharModalCombo();
-        }
-    });
-
-    // Limpar carrinho
-    document.getElementById("limpar-carrinho")
-        ?.addEventListener("click", limparCarrinho);
-
-    // Finalizar pedido
-    document.getElementById("finalizar-pedido")
-        ?.addEventListener("click", finalizarPedido);
-
-    mostrarCarrinho();
-});
-
-
-/* ========================================
-   6. ABRIR E FECHAR JANELA DO COMBO
+   5. MODAL DO COMBO E CÁLCULO DE PREÇO
 ======================================== */
 
 function abrirModalCombo(seletor) {
     const cartao = seletor.closest(".cardapio-item");
-    const botao = cartao.querySelector(".botao-adicionar");
+    const botao = cartao?.querySelector(".botao-adicionar");
     const modal = document.getElementById("modal-combo");
 
     if (!modal || !botao) return;
 
-    comboSelecionado = {
+    totem.combo = {
         id: Number(botao.dataset.id),
         nome: botao.dataset.nome,
         preco: Number(botao.dataset.preco),
         precoCombo: Number(botao.dataset.precoCombo),
-        seletor: seletor
+        seletor
     };
 
     const nomeProduto = document.getElementById("modal-nome-produto");
-    if (nomeProduto) {
-        nomeProduto.textContent = comboSelecionado.nome;
-    }
+    if (nomeProduto) nomeProduto.textContent = totem.combo.nome;
 
     resetarSelecoesVisuaisModal();
     atualizarPrecoModal();
@@ -329,35 +277,25 @@ function abrirModalCombo(seletor) {
 
 function fecharModalCombo() {
     const modal = document.getElementById("modal-combo");
-
     if (!modal || modal.hidden) return;
 
     modal.hidden = true;
     document.body.style.overflow = "";
 
-    // Reseta o seletor e os botões visuais do card para "Só lanche"
-    if (comboSelecionado && comboSelecionado.seletor) {
-        comboSelecionado.seletor.value = "individual";
-        const container = comboSelecionado.seletor.closest(".opcoes-pedido");
-        if (container) {
-            container.querySelectorAll(".opcao-btn").forEach(b => {
-                b.classList.toggle("ativo", b.dataset.valor === "individual");
-            });
-        }
+    // Restaura o seletor do card para "Só lanche"
+    if (totem.combo?.seletor) {
+        totem.combo.seletor.value = "individual";
+        const container = totem.combo.seletor.closest(".opcoes-pedido");
+        marcarBotaoAtivo(container, ".opcao-btn", b => b.dataset.valor === "individual");
     }
 
-    comboSelecionado = null;
+    totem.combo = null;
 }
 
-
-/* ========================================
-   7. CALCULAR E ATUALIZAR PREÇO DO COMBO
-======================================== */
-
-function calcularPrecoCombo(precoBase, batata, bebida, molho = "Sem molho") {
+function calcularPrecoCombo(precoBase, batata, bebida, molho = DEFAULTS_TOTEM.molho) {
     const precoBatata = PRECO_BATATAS[batata];
     const precoBebida = PRECO_BEBIDAS[bebida];
-    const precoMolho = PRECO_MOLHOS[molho] || 0;
+    const precoMolho = PRECO_MOLHOS[molho] ?? 0;
 
     if (
         !Number.isFinite(precoBase) ||
@@ -367,18 +305,20 @@ function calcularPrecoCombo(precoBase, batata, bebida, molho = "Sem molho") {
         return 0;
     }
 
-    // O preço base inclui batata média (R$ 12) e Coca-Cola (R$ 8).
-    return precoBase + (precoBatata - 12) + (precoBebida - 8) + precoMolho;
+    const difBatata = precoBatata - PRECO_BATATAS[DEFAULTS_TOTEM.batata];
+    const difBebida = precoBebida - PRECO_BEBIDAS[DEFAULTS_TOTEM.bebida];
+
+    return precoBase + difBatata + difBebida + precoMolho;
 }
 
 function atualizarPrecoModal() {
-    if (!comboSelecionado) return;
+    if (!totem.combo) return;
 
     const preco = calcularPrecoCombo(
-        comboSelecionado.precoCombo,
-        batataEscolhidaTotem,
-        bebidaEscolhidaTotem,
-        molhoEscolhidoTotem
+        totem.combo.precoCombo,
+        totem.batata,
+        totem.bebida,
+        totem.molho
     );
 
     const elementoPreco = document.getElementById("modal-preco-combo");
@@ -387,98 +327,97 @@ function atualizarPrecoModal() {
     }
 }
 
-
-/* ========================================
-   8. CONFIRMAR COMBO
-======================================== */
-
 function confirmarCombo() {
-    if (!comboSelecionado) return;
+    if (!totem.combo) return;
 
     const preco = calcularPrecoCombo(
-        comboSelecionado.precoCombo,
-        batataEscolhidaTotem,
-        bebidaEscolhidaTotem,
-        molhoEscolhidoTotem
+        totem.combo.precoCombo,
+        totem.batata,
+        totem.bebida,
+        totem.molho
     );
 
-    const produto = {
-        id: comboSelecionado.id,
-        nome: comboSelecionado.nome,
-        preco: preco,
-        quantidade: 1,
+    adicionarCarrinho({
+        id: totem.combo.id,
+        nome: totem.combo.nome,
+        preco,
         tipo: "combo",
-        batata: batataEscolhidaTotem,
-        bebida: bebidaEscolhidaTotem,
-        molho: molhoEscolhidoTotem
-    };
+        batata: totem.batata,
+        bebida: totem.bebida,
+        molho: totem.molho
+    });
 
-    adicionarCarrinho(produto);
     fecharModalCombo();
 }
 
 
 /* ========================================
-   9. ADICIONAR E MOSTRAR PRODUTOS NO CARRINHO
+   6. FEEDBACK VISUAL (TOAST E ANIMAÇÕES)
 ======================================== */
 
-let timerToastCarrinho = null;
+function reiniciarAnimacao(elemento, classe) {
+    elemento.classList.remove(classe);
+    void elemento.offsetWidth; // Força reflow para reiniciar animação CSS
+    elemento.classList.add(classe);
+}
+
+function obterOuCriarToast() {
+    let toast = document.getElementById("toast-carrinho");
+    if (toast) return toast;
+
+    toast = criarElemento("div", "toast-carrinho");
+    toast.id = "toast-carrinho";
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+
+    const icone = criarElemento("div", "toast-icone", "✓");
+    const textoWrap = criarElemento("div", "toast-texto");
+    const titulo = criarElemento("strong", "", "Adicionado ao carrinho!");
+    const subtitulo = criarElemento("span");
+    const barra = criarElemento("div", "toast-barra");
+
+    textoWrap.append(titulo, subtitulo);
+    toast.append(icone, textoWrap, barra);
+    document.body.appendChild(toast);
+
+    return toast;
+}
 
 function mostrarNotificacaoCarrinho(produto, botaoClicado = null) {
-    // 1. Faz o botão "Carrinho" do topo dar um pulo
     const botaoTopo = document.querySelector(".botao-carrinho");
     if (botaoTopo) {
-        botaoTopo.classList.remove("animar-pulo");
-        void botaoTopo.offsetWidth;
-        botaoTopo.classList.add("animar-pulo");
+        reiniciarAnimacao(botaoTopo, "animar-pulo");
     }
 
-    // 2. Muda o texto do botão do card para "Adicionado! ✓" por 1 segundo
     if (botaoClicado) {
-        const textoOriginal = botaoClicado.textContent;
+        const textoOriginal = botaoClicado.dataset.textoOriginal || botaoClicado.textContent;
+        botaoClicado.dataset.textoOriginal = textoOriginal;
         botaoClicado.textContent = "Adicionado! ✓";
         botaoClicado.classList.add("adicionado");
 
-        setTimeout(() => {
+        clearTimeout(botaoClicado._timerFeedback);
+        botaoClicado._timerFeedback = setTimeout(() => {
             botaoClicado.textContent = textoOriginal;
             botaoClicado.classList.remove("adicionado");
         }, 1000);
     }
 
-    // 3. Cria ou atualiza a notificação flutuante (Toast)
-    let toast = document.getElementById("toast-carrinho");
-    if (!toast) {
-        toast = document.createElement("div");
-        toast.id = "toast-carrinho";
-        toast.className = "toast-carrinho";
-        toast.setAttribute("role", "status");
-        toast.setAttribute("aria-live", "polite");
-        document.body.appendChild(toast);
-    }
+    const toast = obterOuCriarToast();
+    const tituloItem = produto.tipo === "combo" ? `Combo ${produto.nome}` : produto.nome;
+    toast.querySelector("span").textContent = `${tituloItem} • ${formatarDinheiro(produto.preco)}`;
 
-    const tituloItem = produto.tipo === "combo"
-        ? `Combo ${produto.nome}`
-        : produto.nome;
-
-    toast.classList.remove("visivel");
-    void toast.offsetWidth;
-
-    toast.innerHTML = `
-        <div class="toast-icone">✓</div>
-        <div class="toast-texto">
-            <strong>Adicionado ao carrinho!</strong>
-            <span>${tituloItem} • ${formatarDinheiro(produto.preco)}</span>
-        </div>
-        <div class="toast-barra"></div>
-    `;
-
-    toast.classList.add("visivel");
+    reiniciarAnimacao(toast, "visivel");
 
     clearTimeout(timerToastCarrinho);
     timerToastCarrinho = setTimeout(() => {
         toast.classList.remove("visivel");
     }, 2800);
 }
+
+
+/* ========================================
+   7. OPERAÇÕES E RENDERIZAÇÃO DO CARRINHO
+======================================== */
 
 function adicionarCarrinho(produto, botaoClicado = null) {
     if (
@@ -494,15 +433,11 @@ function adicionarCarrinho(produto, botaoClicado = null) {
         ...produto,
         quantidade: 1
     };
-
     novoProduto.chave = criarChave(novoProduto);
 
-    const produtoExistente = carrinho.find(
-        item => item.chave === novoProduto.chave
-    );
-
-    if (produtoExistente) {
-        produtoExistente.quantidade++;
+    const existente = carrinho.find(item => item.chave === novoProduto.chave);
+    if (existente) {
+        existente.quantidade++;
     } else {
         carrinho.push(novoProduto);
     }
@@ -512,104 +447,11 @@ function adicionarCarrinho(produto, botaoClicado = null) {
     mostrarNotificacaoCarrinho(novoProduto, botaoClicado);
 }
 
-function mostrarCarrinho() {
-    const container = document.getElementById("carrinho-itens");
-
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    if (carrinho.length === 0) {
-        const mensagem = document.createElement("p");
-        mensagem.textContent = "Seu carrinho está vazio!";
-        container.appendChild(mensagem);
-    } else {
-        carrinho.forEach(produto => {
-            const item = document.createElement("div");
-            item.className = "item-carrinho";
-
-            const nome = document.createElement("h3");
-            nome.textContent = produto.tipo === "combo"
-                ? "Combo " + produto.nome
-                : produto.nome;
-
-            const preco = document.createElement("p");
-            preco.textContent =
-                "Preço unitário: " + formatarDinheiro(produto.preco);
-
-            item.appendChild(nome);
-
-            // Detalhes do combo (incluindo molho se houver)
-            if (produto.tipo === "combo") {
-                const detalhes = document.createElement("p");
-                let textoDetalhes = produto.batata + " + " + produto.bebida;
-                if (produto.molho && produto.molho !== "Sem molho") {
-                    textoDetalhes += " + Molho " + produto.molho;
-                }
-                detalhes.textContent = textoDetalhes;
-                item.appendChild(detalhes);
-            }
-
-            const quantidade = document.createElement("p");
-            quantidade.className = "quantidade-produto";
-            quantidade.textContent = "Quantidade: " + produto.quantidade;
-
-            const subtotal = document.createElement("p");
-            subtotal.className = "subtotal-produto";
-            subtotal.textContent =
-                "Subtotal: " +
-                formatarDinheiro(produto.preco * produto.quantidade);
-
-            const controles = document.createElement("div");
-            controles.className = "controles-carrinho";
-
-            const botaoDiminuir = document.createElement("button");
-            botaoDiminuir.textContent = "−";
-            botaoDiminuir.setAttribute("aria-label", "Diminuir quantidade");
-            botaoDiminuir.addEventListener("click", () => {
-                alterarQuantidade(produto.chave, -1);
-            });
-
-            const botaoAumentar = document.createElement("button");
-            botaoAumentar.textContent = "+";
-            botaoAumentar.setAttribute("aria-label", "Aumentar quantidade");
-            botaoAumentar.addEventListener("click", () => {
-                alterarQuantidade(produto.chave, 1);
-            });
-
-            const botaoRemover = document.createElement("button");
-            botaoRemover.textContent = "Remover";
-            botaoRemover.className = "botao-remover";
-            botaoRemover.addEventListener("click", () => {
-                removerProduto(produto.chave);
-            });
-
-            controles.appendChild(botaoDiminuir);
-            controles.appendChild(botaoAumentar);
-            controles.appendChild(botaoRemover);
-
-            item.appendChild(preco);
-            item.appendChild(quantidade);
-            item.appendChild(subtotal);
-            item.appendChild(controles);
-
-            container.appendChild(item);
-        });
-    }
-
-    atualizarTotal();
-}
-
-
-/* ========================================
-   10. CONTROLES DO CARRINHO E TOTAL
-======================================== */
-
-function alterarQuantidade(chave, valor) {
+function alterarQuantidade(chave, delta) {
     const produto = carrinho.find(item => item.chave === chave);
     if (!produto) return;
 
-    produto.quantidade += valor;
+    produto.quantidade += delta;
 
     if (produto.quantidade <= 0) {
         removerProduto(chave);
@@ -621,7 +463,7 @@ function alterarQuantidade(chave, valor) {
 }
 
 function removerProduto(chave) {
-    carrinho = carrinho.filter(produto => produto.chave !== chave);
+    carrinho = carrinho.filter(item => item.chave !== chave);
     salvarCarrinho();
     mostrarCarrinho();
 }
@@ -634,25 +476,80 @@ function limparCarrinho() {
 
 function atualizarTotal() {
     const elementoTotal = document.getElementById("carrinho-total");
-    if (!elementoTotal) return;
+    if (elementoTotal) {
+        const total = carrinho.reduce((soma, item) => soma + item.preco * item.quantidade, 0);
+        elementoTotal.textContent = formatarDinheiro(total);
+    }
 
-    const total = carrinho.reduce((soma, produto) => {
-        return soma + produto.preco * produto.quantidade;
-    }, 0);
-
-    elementoTotal.textContent = formatarDinheiro(total);
+    const botaoFinalizar = document.getElementById("finalizar-pedido");
+    if (botaoFinalizar && !finalizandoPedido) {
+        botaoFinalizar.disabled = carrinho.length === 0;
+    }
 }
 
-function formatarDinheiro(valor) {
-    return valor.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-    });
+function criarCardItemCarrinho(produto) {
+    const item = criarElemento("div", "item-carrinho");
+
+    const titulo = produto.tipo === "combo" ? `Combo ${produto.nome}` : produto.nome;
+    item.appendChild(criarElemento("h3", "", titulo));
+
+    if (produto.tipo === "combo") {
+        let textoDetalhes = `${produto.batata} + ${produto.bebida}`;
+        if (produto.molho && produto.molho !== DEFAULTS_TOTEM.molho) {
+            textoDetalhes += ` + Molho ${produto.molho}`;
+        }
+        item.appendChild(criarElemento("p", "", textoDetalhes));
+    }
+
+    item.append(
+        criarElemento("p", "", `Preço unitário: ${formatarDinheiro(produto.preco)}`),
+        criarElemento("p", "quantidade-produto", `Quantidade: ${produto.quantidade}`),
+        criarElemento("p", "subtotal-produto", `Subtotal: ${formatarDinheiro(produto.preco * produto.quantidade)}`)
+    );
+
+    const controles = criarElemento("div", "controles-carrinho");
+
+    const btnDiminuir = criarElemento("button", "", "−");
+    btnDiminuir.type = "button";
+    btnDiminuir.setAttribute("aria-label", "Diminuir quantidade");
+    btnDiminuir.addEventListener("click", () => alterarQuantidade(produto.chave, -1));
+
+    const btnAumentar = criarElemento("button", "", "+");
+    btnAumentar.type = "button";
+    btnAumentar.setAttribute("aria-label", "Aumentar quantidade");
+    btnAumentar.addEventListener("click", () => alterarQuantidade(produto.chave, 1));
+
+    const btnRemover = criarElemento("button", "botao-remover", "Remover");
+    btnRemover.type = "button";
+    btnRemover.addEventListener("click", () => removerProduto(produto.chave));
+
+    controles.append(btnDiminuir, btnAumentar, btnRemover);
+    item.appendChild(controles);
+
+    return item;
+}
+
+function mostrarCarrinho() {
+    const container = document.getElementById("carrinho-itens");
+    if (!container) return;
+
+    const fragmento = document.createDocumentFragment();
+
+    if (carrinho.length === 0) {
+        fragmento.appendChild(criarElemento("p", "", "Seu carrinho está vazio!"));
+    } else {
+        carrinho.forEach(produto => {
+            fragmento.appendChild(criarCardItemCarrinho(produto));
+        });
+    }
+
+    container.replaceChildren(fragmento);
+    atualizarTotal();
 }
 
 
 /* ========================================
-   11. FINALIZAR PEDIDO
+   8. FINALIZAR PEDIDO E CLUBE MÉQUI
 ======================================== */
 
 async function finalizarPedido() {
@@ -674,26 +571,19 @@ async function finalizarPedido() {
     try {
         const resposta = await fetch("/finalizar-pedido", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                itens: carrinho
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ itens: carrinho })
         });
 
         const resultado = await resposta.json();
 
         if (!resposta.ok) {
-            throw new Error(
-                resultado.erro || "Erro ao finalizar pedido."
-            );
+            throw new Error(resultado.erro || "Erro ao finalizar pedido.");
         }
 
         carrinho = [];
         salvarCarrinho();
-        window.location.href = "/pedidos/" + resultado.pedido_id;
-
+        window.location.href = `/pedidos/${resultado.pedido_id}`;
     } catch (erro) {
         alert(erro.message || "Não foi possível finalizar o pedido.");
         console.error(erro);
@@ -705,13 +595,9 @@ async function finalizarPedido() {
         }
     }
 }
-/* ========================================
-   12. RESGATAR RECOMPENSA DO CLUBE MÉQUI
-======================================== */
 
 function resgatarPremioClube(botao) {
-    const jaResgatado = carrinho.some(item => item.tipo === "resgate");
-    if (jaResgatado) {
+    if (carrinho.some(item => item.tipo === "resgate")) {
         alert("Você já adicionou uma recompensa do Clube neste carrinho!");
         return;
     }
@@ -720,15 +606,80 @@ function resgatarPremioClube(botao) {
     const nome = botao.dataset.nome;
     const pontos = Number(botao.dataset.pontos);
 
-    const produtoResgate = {
-        id: id,
-        nome: `${nome} (Clube Méqui - ${pontos} pts)`,
-        preco: 0,
-        tipo: "resgate",
-        batata: "",
-        bebida: "",
-        molho: ""
-    };
-
-    adicionarCarrinho(produtoResgate, botao);
+    adicionarCarrinho(
+        {
+            id,
+            nome: `${nome} (Clube Méqui - ${pontos} pts)`,
+            preco: 0,
+            tipo: "resgate",
+            batata: "",
+            bebida: "",
+            molho: ""
+        },
+        botao
+    );
 }
+
+
+/* ========================================
+   9. INICIALIZAÇÃO DE EVENTOS
+======================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Seletores "Só lanche" / "Combo"
+    document.querySelectorAll(".tipo-pedido").forEach(seletor => {
+        seletor.addEventListener("change", () => {
+            if (seletor.value === "combo") {
+                abrirModalCombo(seletor);
+            }
+        });
+    });
+
+    // Botões de adicionar item no cardápio
+    document.querySelectorAll(".botao-adicionar").forEach(botao => {
+        botao.addEventListener("click", () => {
+            const cartao = botao.closest(".cardapio-item");
+            const seletor = cartao?.querySelector(".tipo-pedido");
+
+            if (seletor && seletor.value === "combo") {
+                abrirModalCombo(seletor);
+                return;
+            }
+
+            adicionarCarrinho(
+                {
+                    id: Number(botao.dataset.id),
+                    nome: botao.dataset.nome,
+                    preco: Number(botao.dataset.preco),
+                    tipo: "individual",
+                    batata: "",
+                    bebida: "",
+                    molho: ""
+                },
+                botao
+            );
+        });
+    });
+
+    // Controles do modal de combo
+    document.getElementById("modal-batata")?.addEventListener("change", atualizarPrecoModal);
+    document.getElementById("modal-bebida")?.addEventListener("change", atualizarPrecoModal);
+    document.getElementById("confirmar-modal-combo")?.addEventListener("click", confirmarCombo);
+    document.getElementById("cancelar-modal-combo")?.addEventListener("click", fecharModalCombo);
+    document.getElementById("fechar-modal-combo")?.addEventListener("click", fecharModalCombo);
+
+    const modal = document.getElementById("modal-combo");
+    modal?.addEventListener("click", evento => {
+        if (evento.target === modal) fecharModalCombo();
+    });
+
+    document.addEventListener("keydown", evento => {
+        if (evento.key === "Escape") fecharModalCombo();
+    });
+
+    // Ações da página do carrinho
+    document.getElementById("limpar-carrinho")?.addEventListener("click", limparCarrinho);
+    document.getElementById("finalizar-pedido")?.addEventListener("click", finalizarPedido);
+
+    mostrarCarrinho();
+});
