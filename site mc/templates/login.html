@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Login - Mequi Experience</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,7 +17,7 @@
 
     <main class="pagina-login">
 
-        <div class="login-container">
+        <section class="login-container" aria-labelledby="titulo-login">
 
             <img
                 src="https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG17.png"
@@ -26,42 +25,41 @@
                 alt="Logo do Mequi"
             >
 
-            <h1>Mequi Experience</h1>
+            <h1 id="titulo-login">Mequi Experience</h1>
             <h2>Área dos funcionários</h2>
 
             {% if erro %}
-                <p class="erro-login">{{ erro }}</p>
+                <p class="erro-login" role="alert">{{ erro }}</p>
             {% endif %}
 
             <form action="{{ url_for('login') }}" method="POST">
-
                 <label for="usuario">Usuário</label>
-
                 <input
                     type="text"
                     id="usuario"
                     name="usuario"
+                    autocomplete="username"
                     placeholder="Digite seu usuário"
+                    autofocus
                     required
                 >
 
                 <label for="senha">Senha</label>
-
                 <input
                     type="password"
                     id="senha"
                     name="senha"
+                    autocomplete="current-password"
                     placeholder="Digite sua senha"
                     required
                 >
 
                 <button type="submit">Entrar</button>
-
             </form>
 
             <a href="{{ url_for('inicio') }}">Voltar ao cardápio</a>
 
-        </div>
+        </section>
 
     </main>
 
